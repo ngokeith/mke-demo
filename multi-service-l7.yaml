@@ -1,0 +1,62 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello-world
+  labels:
+    app: hello-world
+    owner: dklb
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: hello-world
+  template:
+    metadata:
+      labels:
+        app: hello-world
+    spec:
+      containers:
+      - name: echo-server
+        image: hashicorp/http-echo
+        args:
+        - -listen=:80
+        - -text="Hello from the hello-world service on Kubernetes running on Mesosphere DC/OS!"
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: hello-world
+    owner: dklb
+  name: hello-world
+spec:
+  ports:
+  - nodePort: 30908
+    port: 80
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: hello-world
+  type: NodePort
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: edgelb
+    kubernetes.dcos.io/edgelb-pool-name: dklb
+  labels:
+    owner: dklb
+  name: helloworld-ig
+spec:
+  rules:
+  - host: "ext-aly-hybrid-327129573.us-west-2.elb.amazonaws.com"
+    http:
+      paths:
+      - backend:
+          serviceName: hello-world
+          servicePort: 80
+---
