@@ -21,7 +21,7 @@ DCOS_USER="bootstrapuser"
 DCOS_PASSWORD="deleteme"
 KUBERNETES_STUB_LINK="https://universe-converter.mesosphere.com/transform?url=https://dcos-kubernetes-artifacts.s3.amazonaws.com/nightlies/kubernetes/master/stub-universe-kubernetes.json"
 KUBERNETES_CLUSTER_STUB_LINK="https://universe-converter.mesosphere.com/transform?url=https://dcos-kubernetes-artifacts.s3.amazonaws.com/nightlies/kubernetes-cluster/master/stub-universe-kubernetes-cluster.json"
-
+JENKINS_VERSION="3.5.2-2.107.2"
 
 #### TEST IF RAN AS ROOT
 
@@ -67,6 +67,8 @@ echo
 echo "  6. A license file named $LICENSE_FILE, if it exists"
 echo
 echo "  7. The SSH key $SSH_KEY_FILE via ssh-add, if it exists"
+echo
+echo "  8. A v$JENKINS_VERSION Jenkins named /dev/jenkins"
 echo
 echo "Your existing kubectl config file will be moved to /tmp/kubectl-config"
 echo
@@ -270,6 +272,13 @@ echo "**** Installing /dev/kubernetes-dev K8s cluster, v$K8S_DEV_VERSION using k
 echo
 dcos kubernetes cluster create --package-version=$K8S_DEV_VERSION --options=kubernetes-dev-options.json --yes
 # dcos kubernetes cluster debug plan status deploy --cluster-name=dev/kubernetes-dev
+
+#### INSTALL /DEV/JENKINS
+
+echo
+echo "**** Installing Jenkins v$JENKINS_VERSION to /dev"
+echo
+dcos package install jenkins --package-version=$JENKINS_VERSION --options=jenkins-options.json --yes
 
 #### WAIT FOR BOTH K8S CLUSTERS TO COMPLETE THEIR INSTALL
 

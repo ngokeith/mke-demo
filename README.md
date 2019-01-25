@@ -28,6 +28,8 @@ This script will:
 
 10. Deploy several example web services and expose through L4/L7
 
+11. A Jenkins deployment named /dev/jenkins"
+
 #### PREREQUISITES
 
 1. The DC/OS CLI and kubectl must already be installed on your local machine
