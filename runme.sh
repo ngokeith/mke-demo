@@ -81,15 +81,15 @@ echo "The user name that ran this script is $USER so file ownership for kubectl 
 
 #### MOVE DCOS CLI CLUSTERS TO /TMP/CLUSTERS
 
-#echo
-#echo "**** Moving DC/OS CLI configuration to /tmp/dcos-clusters"
-#echo "     So all existing DC/OS cluster configurations are now removed"
-#echo
-#rm -rf /tmp/dcos-clusters 2> /dev/null
-#mkdir /tmp/dcos-clusters
-#mv ~/.dcos/clusters/* /tmp/dcos-clusters 2> /dev/null
-#mv ~/.dcos/dcos.toml /tmp/dcos-clusters 2> /dev/null
-#rm -rf ~/.dcos 2> /dev/null
+echo
+echo "**** Moving DC/OS CLI configuration to /tmp/dcos-clusters"
+echo "     So all existing DC/OS cluster configurations are now removed"
+echo
+rm -rf /tmp/dcos-clusters 2> /dev/null
+mkdir /tmp/dcos-clusters
+mv ~/.dcos/clusters/* /tmp/dcos-clusters 2> /dev/null
+mv ~/.dcos/dcos.toml /tmp/dcos-clusters 2> /dev/null
+rm -rf ~/.dcos 2> /dev/null
 
 #### SETUP CLI
 
