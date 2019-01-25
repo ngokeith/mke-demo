@@ -46,7 +46,7 @@ Default variables below:
 ```
 ######## VARIABLES ########
 
-SCRIPT_VERSION="JAN-22-2019"
+SCRIPT_VERSION="JAN-25-2019"
 LICENSE_FILE="<insert/path/here>"
 EDGE_LB_VERSION="1.2.3-42-g6643742"
 K8S_MKE_VERSION="stub-universe"
