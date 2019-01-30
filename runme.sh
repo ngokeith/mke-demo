@@ -451,10 +451,10 @@ echo "     By default, CCM should have open security group rules for the ELB whi
 echo
 echo
 echo "     Here are the workloads below:"
-echo "     hello-world1 service - port 80"
-echo "     hello-world2 service - port 8080"
-echo "     hello-world3 service - port 8181"
+echo "     hello-world1 service - port 10001"
+echo "     hello-world2 service - port 10002"
+echo "     hello-world3 service - port 10003"
 echo "     dcos-site1 service - port 10004"
 echo "     dcos-site2 service - port 10005"
 
-open "http://$DKLB_PUBLIC_AGENT_IP"
+open "http://$DKLB_PUBLIC_AGENT_IP:10001"

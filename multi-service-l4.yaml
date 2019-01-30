@@ -29,7 +29,7 @@ kind: Service
 metadata:
   annotations:
     kubernetes.dcos.io/edgelb-pool-name: "dklb"
-    kubernetes.dcos.io/edgelb-pool-portmap.80: "80"
+    kubernetes.dcos.io/edgelb-pool-portmap.80: "10001"
   labels:
     app: hello-world
   name: hello-world
@@ -72,7 +72,7 @@ spec:
   metadata:
     annotations:
       kubernetes.dcos.io/edgelb-pool-name: "dklb"
-      kubernetes.dcos.io/edgelb-pool-portmap.8080: "8080"
+      kubernetes.dcos.io/edgelb-pool-portmap.8080: "10002"
     labels:
       app: hello-world2
     name: hello-world2
@@ -115,7 +115,7 @@ spec:
   metadata:
     annotations:
       kubernetes.dcos.io/edgelb-pool-name: "dklb"
-      kubernetes.dcos.io/edgelb-pool-portmap.8181: "8181"
+      kubernetes.dcos.io/edgelb-pool-portmap.8181: "10003"
     labels:
       app: hello-world3
     name: hello-world3
