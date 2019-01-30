@@ -10,18 +10,24 @@
 
 ######## VARIABLES ########
 
-SCRIPT_VERSION="JAN-22-2019"
+SCRIPT_VERSION="JAN-30-2019"
 LICENSE_FILE="dcos-1-12-license-50-nodes.txt"
-EDGE_LB_VERSION="1.2.3-42-g6643742"
+JENKINS_VERSION="3.5.2-2.107.2"
+#KEEP FOR OLD STABLE - EDGE_LB_VERSION="1.2.3-42-g6643742"
 K8S_MKE_VERSION="stub-universe"
 K8S_PROD_VERSION="stub-universe"
 K8S_DEV_VERSION="stub-universe"
 SSH_KEY_FILE="/Users/josh/ccm-priv.key"
 DCOS_USER="bootstrapuser"
 DCOS_PASSWORD="deleteme"
+
+# BELOW IS EDGELB VARS FOR BETA TESTING DKLB
+EDGE_LB_LINK="https://edge-lb-infinity-artifacts.s3.amazonaws.com/autodelete7d/v1.2.3-111-gc28ece3/edgelb/stub-universe-edgelb.json"
+EDGE_LB_POOL_LINK="https://edge-lb-infinity-artifacts.s3.amazonaws.com/autodelete7d/v1.2.3-111-gc28ece3/edgelb-pool/stub-universe-edgelb-pool.json"
+# BELOW IS MKE VARS FOR BETA TESTING DKLB
 KUBERNETES_STUB_LINK="https://universe-converter.mesosphere.com/transform?url=https://dcos-kubernetes-artifacts.s3.amazonaws.com/nightlies/kubernetes/master/stub-universe-kubernetes.json"
 KUBERNETES_CLUSTER_STUB_LINK="https://universe-converter.mesosphere.com/transform?url=https://dcos-kubernetes-artifacts.s3.amazonaws.com/nightlies/kubernetes-cluster/master/stub-universe-kubernetes-cluster.json"
-JENKINS_VERSION="3.5.2-2.107.2"
+
 
 #### TEST IF RAN AS ROOT
 
@@ -160,9 +166,9 @@ echo "**** Installing Edge-LB v$EDGE_LB_VERSION"
 echo
 
 #### New Links for Edge-LB version with dklb support
-dcos package repo add --index=0 edgelb-aws https://universe-converter.mesosphere.com/transform?url=https://edge-lb-infinity-artifacts.s3.amazonaws.com/autodelete7d/v$EDGE_LB_VERSION/edgelb/stub-universe-edgelb.json
+dcos package repo add --index=0 edgelb-aws $EDGE_LB_LINK
 
-dcos package repo add --index=0 edgelb-pool-aws https://universe-converter.mesosphere.com/transform?url=https://edge-lb-infinity-artifacts.s3.amazonaws.com/autodelete7d/v$EDGE_LB_VERSION/edgelb-pool/stub-universe-edgelb-pool.json
+dcos package repo add --index=0 edgelb-pool-aws $EDGE_LB_POOL_LINK
 
 #### Old - for edgelb stable syntax:
 #dcos package repo add --index=0 edge-lb https://downloads.mesosphere.com/edgelb/v$EDGE_LB_VERSION/assets/stub-universe-edgelb.json
