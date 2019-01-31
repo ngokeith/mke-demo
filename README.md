@@ -1,7 +1,7 @@
-# SETUP SCRIPT FOR TWO K8S CLUSTERS ON DC/OS ("2k8s")
+# Setup Script for Two K8s Clusters on DC/OS ("2k8s")
 Revision 1-30-19
 
-This is a script for Enterprise DC/OS 1.12 that will setup two Kubernetes clusters  
+This is a script for Enterprise DC/OS 1.12 that will setup two Kubernetes clusters with L4/L7 Ingress, a Prometheus/Grafana monitoring stack, and a Kafka monitoring demonstration  
 This script has only been tested on OSX with DC/OS >1.12.0 Enterprise Edition  
 
 In the order below, this script will:
