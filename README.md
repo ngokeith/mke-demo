@@ -93,6 +93,6 @@ SSH_KEY_FILE="/Users/josh/ccm-priv.key"
 
 4. Modify the Variables section in the runme.sh
 
-5. `./runme <MASTER_URL>`
+5. `sudo ./runme <MASTER_URL>`
 
-6. Wait for it to finish (~ 9-12 min)
+6. Wait for it to finish (~ 10-12 min)

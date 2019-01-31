@@ -26,10 +26,10 @@ SSH_KEY_FILE="/Users/josh/ccm-priv.key"
 
 #### TEST IF RAN AS ROOT
 
-#if [[ $EUID -ne 0 ]]; then
-#   echo "This script must be run as root, via sudo"
-#   exit 1
-#fi
+if [[ $EUID -ne 0 ]]; then
+   echo "This script must be run as root, via sudo"
+   exit 1
+fi
 
 #### SETUP MASTER URL VARIABLE
 
@@ -498,15 +498,17 @@ dcos security org groups grant dev dcos:secrets:list:default:/ read
 
 rm -f private-key.pem 2> /dev/null
 rm -f public-key.pem 2> /dev/null
+rm -f edge-lb-private-key.pem 2> /dev/null
+rm -f edge-lb-public-key.pem 2> /dev/null
 
 # This script is ran via sudo since /etc/hosts is modified. But it also sets up kubectl and the dcos CLI
 # which means some of those files now belong to root
 
-#echo
-#echo "**** Running chown -RH $SUDO_USER ~/.kube ~/.dcos since this script is ran via sudo"
-#echo
-# If you ever break out of this script, you must run this command:
-#chown -RH $SUDO_USER ~/.kube ~/.dcos
+echo
+echo "**** Running chown -RH $SUDO_USER ~/.kube ~/.dcos since this script is ran via sudo"
+echo
+ If you ever break out of this script, you must run this command:
+chown -RH $SUDO_USER ~/.kube ~/.dcos
 
 #### INSTALL DCOS-MONITORING
 ./install_monitoring.sh
