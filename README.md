@@ -73,7 +73,7 @@ SSH_KEY_FILE="/Users/josh/ccm-priv.key"
 
 #### USAGE
 
-1. Start a cluster, such as in CCM or TF. Minimum of 7 private agents (m4.xlarge), only 1 public agent, DC/OS EE 1.12
+1. Start a cluster, such as in CCM or TF. Minimum of 9 private agents (m4.xlarge) or 5 private agents (m4.2xlarge), only 1 public agent, DC/OS EE 1.12
 
 2. Copy the master's URL to your clipboard. If it begins with HTTP the script will change it to HTTPS.
 
