@@ -8,19 +8,17 @@
 # incorporate k8s autoscaler demo
 
 
-######## VARIABLES ########
+######## REQUIRED VARIABLES ########
 
 SCRIPT_VERSION="JAN-30-2019"
-LICENSE_FILE="dcos-1-12-license-50-nodes.txt"
 JENKINS_VERSION="3.5.2-2.107.2"
-#KEEP FOR OLD STABLE - EDGE_LB_VERSION="1.2.3-42-g6643742"
+KAFKA_VERSION="2.3.0-1.1.0"
 K8S_MKE_VERSION="stub-universe"
 K8S_PROD_VERSION="stub-universe"
 K8S_DEV_VERSION="stub-universe"
-SSH_KEY_FILE="/Users/josh/ccm-priv.key"
 DCOS_USER="bootstrapuser"
 DCOS_PASSWORD="deleteme"
-
+#KEEP FOR OLD STABLE - EDGE_LB_VERSION="1.2.3-42-g6643742"
 # BELOW IS EDGELB VARS FOR BETA TESTING DKLB
 EDGE_LB_LINK="https://edge-lb-infinity-artifacts.s3.amazonaws.com/autodelete7d/v1.2.3-111-gc28ece3/edgelb/stub-universe-edgelb.json"
 EDGE_LB_POOL_LINK="https://edge-lb-infinity-artifacts.s3.amazonaws.com/autodelete7d/v1.2.3-111-gc28ece3/edgelb-pool/stub-universe-edgelb-pool.json"
@@ -29,6 +27,10 @@ KUBERNETES_STUB_LINK="https://universe-converter.mesosphere.com/transform?url=ht
 KUBERNETES_CLUSTER_STUB_LINK="https://universe-converter.mesosphere.com/transform?url=https://dcos-kubernetes-artifacts.s3.amazonaws.com/nightlies/kubernetes-cluster/master/stub-universe-kubernetes-cluster.json"
 # VHOST Routing Hostname for L7 Loadbalancing
 VHOST="mke-l7.ddns.net"
+
+######## OPTIONAL VARIABLES ########
+LICENSE_FILE="dcos-1-12-license-50-nodes.txt"
+SSH_KEY_FILE="/Users/josh/ccm-priv.key"
 
 #### TEST IF RAN AS ROOT
 
@@ -69,7 +71,7 @@ echo "     and 1 private node running apache and NGINX"
 echo
 echo "  4. A v$K8S_DEV_VERSION K8s cluster named /dev/kubernetes-dev"
 echo
-echo "  5. A v$CASSANDRA_VERSION cassandra cluster named /cassandra"
+echo "  5. A v$KAFKA_VERSION Kafka named kafka and a load generator to show kafka metrics in Grafana"
 echo
 echo "  6. A license file named $LICENSE_FILE, if it exists"
 echo
@@ -287,6 +289,33 @@ echo "**** Installing Jenkins v$JENKINS_VERSION to /dev"
 echo
 dcos package install jenkins --package-version=$JENKINS_VERSION --options=jenkins-options.json --yes
 
+#### INSTALL KAFKA
+KAFKA_VERSION="2.3.0-1.1.0"
+
+#### INSTALL KAFKA
+echo
+echo "**** Installing kafka v$KAFKA_VERSION"
+echo
+dcos package install kafka --package-version=$KAFKA_VERSION --options=options-kafka.json --yes
+sleep 20
+seconds=20
+OUTPUT=1
+while [ "$OUTPUT" != 0 ]; do
+  # since the public kubelet is the last to deploy, we will monitor it
+  OUTPUT=`dcos kafka plan status deploy --name=kafka | grep kafka-2 | awk '{print $3}'`;
+  if [ "$OUTPUT" = "(COMPLETE)" ];then
+        OUTPUT=0
+  fi
+  seconds=$((seconds+10))
+  printf "Waited $seconds seconds for Kafka to start. Still waiting.\n"
+  sleep 10
+done
+
+dcos kafka topic create performancetest --partitions 10 --replication 3 --name=kafka
+
+dcos marathon app add 250-baseline.json
+
+
 #### WAIT FOR BOTH K8S CLUSTERS TO COMPLETE THEIR INSTALL
 
 echo
@@ -497,6 +526,9 @@ echo
 # If you ever break out of this script, you must run this command:
 chown -RH $SUDO_USER ~/.kube ~/.dcos
 
+#### INSTALL DCOS-MONITORING
+./install_monitoring.sh
+
 #### Opening dklb-pool-1 workloads
 echo "     Sleeping for 30 seconds to make sure sufficient time has been given for the app and Edgelb pool to deploy"
 sleep 30
@@ -520,8 +552,10 @@ echo "     L7 (HTTP) - hello-world4 service - Defaults to http://mke-l7.ddns.net
 echo "     L7 (HTTP) - hello-world5 service - Defaults to http://mke-l7.ddns.net:81"
 echo "     L4 (TCP) - dcos-site1 service - port 10004"
 echo "     L4 (TCP) - dcos-site2 service - port 10005"
-echo "     L7 (HTTP) - dcos-site3 service - Defaults to http://mke-l7.ddns.net:82
+echo "     L7 (HTTP) - dcos-site3 service - Defaults to http://mke-l7.ddns.net:82"
 
 open "http://$DKLB_PUBLIC_AGENT_IP:10001"
 
-echo "     To install dcos-monitoring for your cluster please run ./install_monitoring.sh"
+echo -e "To enable Mesos Metrics, run \x1B[1m./start_vpn.sh \x1B[0m before executing \x1B[1m./enable_mesos_metrics.sh\x1B[0m"
+
+echo "     If you want to view the Kafka dashboard in Grafana, import dashboard 9018"

@@ -46,19 +46,17 @@ This script will:
 
 Default variables below:
 ```
-######## VARIABLES ########
+######## REQUIRED VARIABLES ########
 
 SCRIPT_VERSION="JAN-30-2019"
-LICENSE_FILE="dcos-1-12-license-50-nodes.txt"
 JENKINS_VERSION="3.5.2-2.107.2"
-#KEEP FOR OLD STABLE - EDGE_LB_VERSION="1.2.3-42-g6643742"
+KAFKA_VERSION="2.3.0-1.1.0"
 K8S_MKE_VERSION="stub-universe"
 K8S_PROD_VERSION="stub-universe"
 K8S_DEV_VERSION="stub-universe"
-SSH_KEY_FILE="/Users/josh/ccm-priv.key"
 DCOS_USER="bootstrapuser"
 DCOS_PASSWORD="deleteme"
-
+#KEEP FOR OLD STABLE - EDGE_LB_VERSION="1.2.3-42-g6643742"
 # BELOW IS EDGELB VARS FOR BETA TESTING DKLB
 EDGE_LB_LINK="https://edge-lb-infinity-artifacts.s3.amazonaws.com/autodelete7d/v1.2.3-111-gc28ece3/edgelb/stub-universe-edgelb.json"
 EDGE_LB_POOL_LINK="https://edge-lb-infinity-artifacts.s3.amazonaws.com/autodelete7d/v1.2.3-111-gc28ece3/edgelb-pool/stub-universe-edgelb-pool.json"
@@ -67,6 +65,10 @@ KUBERNETES_STUB_LINK="https://universe-converter.mesosphere.com/transform?url=ht
 KUBERNETES_CLUSTER_STUB_LINK="https://universe-converter.mesosphere.com/transform?url=https://dcos-kubernetes-artifacts.s3.amazonaws.com/nightlies/kubernetes-cluster/master/stub-universe-kubernetes-cluster.json"
 # VHOST Routing Hostname for L7 Loadbalancing
 VHOST="mke-l7.ddns.net"
+
+######## OPTIONAL VARIABLES ########
+LICENSE_FILE="dcos-1-12-license-50-nodes.txt"
+SSH_KEY_FILE="/Users/josh/ccm-priv.key"
 ```
 
 #### USAGE
@@ -75,6 +77,8 @@ VHOST="mke-l7.ddns.net"
 
 2. Copy the master's URL to your clipboard. If it begins with HTTP the script will change it to HTTPS.
 
-3. `sudo ./runme <MASTER_URL>`
+3. Modify the Variables section in the runme.sh
 
-4. Wait for it to finish (~ 7 min)
+4. `sudo ./runme <MASTER_URL>`
+
+5. Wait for it to finish (~ 7-10 min)
