@@ -227,7 +227,6 @@ export EDGELB_PUBLIC_AGENT_IP=$(dcos task exec -it edgelb-pool-0-server curl ifc
 echo Public IP of Edge-LB node is: $EDGELB_PUBLIC_AGENT_IP
 # NOTE, if that approach to finding the public IP doesn't work, consider https://github.com/ably77/dcos-se/tree/master/Kubernetes/mke/public_ip
 
-
 #### ADD LATEST MKE STUB UNIVERSE that supports dklb
 dcos package repo add --index=0 kubernetes-aws "$KUBERNETES_STUB_LINK"
 
@@ -524,6 +523,28 @@ export DKLB_PUBLIC_AGENT_IP=$(dcos task exec -it dcos-edgelb.pools.dklb curl ifc
 echo Public IP of DKLB Edge-LB node is: $DKLB_PUBLIC_AGENT_IP
 # NOTE, if that approach to finding the public IP doesn't work, consider https://github.com/ably77/dcos-se/tree/master/Kubernetes/mke/public_ip
 
+#### SETUP HOSTS FILE FOR mke-l7.ddns.net
+
+echo
+echo "**** Copying /etc/hosts to /tmp/hosts as a backup, deleting /tmp/hosts if it exists"
+echo
+rm -f /tmp/hosts 2> /dev/null
+cp /etc/hosts /tmp
+
+if [ -n "$(grep www.apache.test /etc/hosts)" ]; then
+    echo "**** www.mke-l7.ddns.net line found in /etc/hosts, removing that line";
+    echo
+    sed -i '' '/www.mke-l7.ddns.net' /etc/hosts
+else
+    echo "**** www.mke-l7.ddns.net was not found in /etc/hosts";
+    echo
+fi
+
+echo "**** Adding entries to /etc/hosts for www.mke-l7.ddns.net for $DKLB_PUBLIC_AGENT_IP"
+echo "$DKLB_PUBLIC_AGENT_IP mke-l7.ddns.net" >> /etc/hosts
+# to bypass DNS & hosts file: curl -H "Host: www.apache.test" $EDGELB_PUBLIC_AGENT_IP
+
+
 echo "     Opening your browser to $DKLB_PUBLIC_AGENT_IP:80,8080,8181,10004,10005"
 echo "     NOTE: If having connectivity issues, make sure that Public Agent LB is open for non 80/443 ports"
 echo "     By default, CCM should have open security group rules for the ELB while the DCOS-terraform project only allows 80/443"
@@ -539,15 +560,26 @@ echo "     L4 (TCP) - dcos-site1 service - port 10004"
 echo "     L4 (TCP) - dcos-site2 service - port 10005"
 echo "     L7 (HTTP) - dcos-site3 service - Defaults to http://mke-l7.ddns.net:82"
 echo
+echo
+echo
+echo "Opening workloads..."
+echo
+echo
 open http://$DKLB_PUBLIC_AGENT_IP:10001
 sleep 1
 open http://$DKLB_PUBLIC_AGENT_IP:10002
 sleep 1
 open http://$DKLB_PUBLIC_AGENT_IP:10003
 sleep 1
+open http://mke-l7.ddns.net:80
+sleep 1
+open http://mke-l7.ddns.net:81
+sleep 1
 open http://$DKLB_PUBLIC_AGENT_IP:10004
 sleep 1
 open http://$DKLB_PUBLIC_AGENT_IP:10005/docs/latest/
+sleep 1
+open http://mke-l7.ddns.net:82
 echo
 echo
 echo -e "To enable Mesos Metrics, run \x1B[1m./start_vpn.sh \x1B[0m before executing \x1B[1m./enable_mesos_metrics.sh\x1B[0m"
