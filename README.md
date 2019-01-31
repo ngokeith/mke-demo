@@ -30,6 +30,10 @@ This script will:
 
 11. A Jenkins deployment named /dev/jenkins"
 
+12. Deploy dcos-monitoring and open Grafana
+
+13. Deploy Kafka, create a topic, and deploy load generator for grafana visualization
+
 #### PREREQUISITES
 
 1. The DC/OS CLI and kubectl must already be installed on your local machine
