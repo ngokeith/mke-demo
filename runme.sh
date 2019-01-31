@@ -1,13 +1,5 @@
 #!/bin/bash
 
-###### TEMPORARY SECTION
-# list files, document their differences
-# todo: pull in other todos, version
-# what permissions does MKE need in its service account? is it for a team's k8s, or for all k8s?
-# new prod: rbac, controplane cpu lowered to 0.5, priv reserved kube cpus lowered to 1, public node count raised to 1,
-# incorporate k8s autoscaler demo
-
-
 ######## REQUIRED VARIABLES ########
 
 SCRIPT_VERSION="JAN-30-2019"
