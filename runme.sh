@@ -192,7 +192,7 @@ dcos package install edgelb --cli --yes
 echo
 echo "**** Waiting for Edge-LB to install"
 echo
-sleep 30
+sleep 20
 echo "     Ignore any 404 errors on next line that begin with  dcos-edgelb: error: Get https://"
 until dcos edgelb ping; do sleep 3 & echo "still waiting..."; done
 
@@ -311,14 +311,12 @@ dcos marathon app add 250-baseline.json
 #### WAIT FOR BOTH K8S CLUSTERS TO COMPLETE THEIR INSTALL
 
 echo
-echo "**** Sleeping for 30 seconds before testing if K8s install of /prod/kubernetes-prod is done,"
-echo "     since it takes a while for kubernetes to be installed (~ 360 seconds)"
+echo "**** Testing if K8s install of /prod/kubernetes-prod is done,"
 echo
 # Sometimes I open another shell while waiting, since this is the biggest delay,
 # so let's fix the dcos cli and kubectl now (and at the end of the script)
 chown -RH $SUDO_USER ~/.kube ~/.dcos
-sleep 30
-seconds=30
+seconds=0
 OUTPUT=1
 while [ "$OUTPUT" != 0 ]; do
   # since the public kubelet is the last to deploy, we will monitor it
@@ -374,7 +372,7 @@ kubectl create -f dklb-deployment.yaml
 kubectl create -f multi-service-l4.yaml
 
 #### DEPLOY AND EXPOSE DCOS-SITE (3 and 4) APPS & HELLO-WORLD (4 and 5) APPS using L7 TCP
-cat <<EOF >> l7-ingress.yaml
+cat <<EOF > l7-ingress.yaml
 ---
 apiVersion: extensions/v1beta1
 kind: Ingress
@@ -522,8 +520,6 @@ chown -RH $SUDO_USER ~/.kube ~/.dcos
 ./install_monitoring.sh
 
 #### Opening dklb-pool-1 workloads
-echo "     Sleeping for 30 seconds to make sure sufficient time has been given for the app and Edgelb pool to deploy"
-sleep 30
 echo
 echo "**** Setting env var DKLB_PUBLIC_AGENT_IP"
 echo
