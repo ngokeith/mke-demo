@@ -510,7 +510,7 @@ rm -f edge-lb-public-key.pem 2> /dev/null
 echo
 echo "**** Running chown -RH $SUDO_USER ~/.kube ~/.dcos since this script is ran via sudo"
 echo
- If you ever break out of this script, you must run this command:
+echo "If you ever break out of this script, you must run this command:"
 chown -RH $SUDO_USER ~/.kube ~/.dcos
 
 #### INSTALL DCOS-MONITORING
