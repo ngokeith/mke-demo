@@ -26,10 +26,10 @@ SSH_KEY_FILE="/Users/josh/ccm-priv.key"
 
 #### TEST IF RAN AS ROOT
 
-if [[ $EUID -ne 0 ]]; then
-   echo "This script must be run as root, via sudo"
-   exit 1
-fi
+#if [[ $EUID -ne 0 ]]; then
+#   echo "This script must be run as root, via sudo"
+#   exit 1
+#fi
 
 #### SETUP MASTER URL VARIABLE
 
@@ -47,40 +47,42 @@ MASTER_URL=$(echo $1 | sed 's/http/https/')
 
 #### EXPLAIN WHAT THIS SCRIPT WILL DO
 
+echo "In the order below, this script will:"
 echo
+echo "1. Move existing DC/OS clusters into /tmp/dcos-clusters and set up a new cluster URL provided"
 echo
-echo "Script version $SCRIPT_VERSION"
+echo "2. Update $LICENSE_FILE if it exists in the optional variables section if it exists"
 echo
-echo "This script will install:"
+echo "3. Do an ssh-add on the $SSH_KEY_FILE in the optional variables section if it exists"
 echo
-echo "  1. Edge-LB v$EDGE_LB_VERSION"
+echo "4. Move existing kube config to /tmp/kubectl-config so we can set up a new kube config"
 echo
-echo "  2. Kubernetes (MKE) v$K8S_MKE_VERSION"
+echo "5. Add repo and install Edge-LB - deploy kubectl pool once completed"
 echo
-echo "  3. A v$K8S_PROD_VERSION K8s cluster named /prod/kubernetes-prod"
-echo "     this cluster will have 1 public node which will run traefik,"
-echo "     and 1 private node running apache and NGINX"
+echo "6. Set up Service Accounts and Install MKE Kubernetes engine"
 echo
-echo "  4. A v$K8S_DEV_VERSION K8s cluster named /dev/kubernetes-dev"
+echo "7. Set up Service Accounts and Install /prod/kubernetes-prod cluster"
 echo
-echo "  5. A v$KAFKA_VERSION Kafka named kafka and a load generator to show kafka metrics in Grafana"
+echo "8. Set up Service Accounts and Install /dev/kubernetes-dev cluster"
 echo
-echo "  6. A license file named $LICENSE_FILE, if it exists"
+echo "9. Install Jenkins in /dev/jenkins"
 echo
-echo "  7. The SSH key $SSH_KEY_FILE via ssh-add, if it exists"
+echo "10. Install Kafka - Create a topic called performancetest"
 echo
-echo "  8. A v$JENKINS_VERSION Jenkins named /dev/jenkins"
+echo "11. Wait for Kubernetes to complete deployment and connect clusters /dev/kubernetes-dev and /prod/kubernetes-prod using kubectl"
 echo
-echo "Your existing kubectl config file will be moved to /tmp/kubectl-config"
+echo "12. Deploy Kafka producer deployment `kafka-producer.yaml` on /prod/kubernetes-prod that sends data to Kafka"
 echo
-echo "Your existing DC/OS cluster configs will be moved to /tmp/clusters"
-echo "  because of a bug (that might be fixed) when too many clusters are defined."
+echo "13. Install DKLB (beta) for L4/L7 Ingress on MKE"
 echo
-echo "The DC/OS CLI and kubectl must already be installed, it will be configured for the cluster at"
-echo "$MASTER_URL"
-echo "with user name $DCOS_USER and password $DCOS_PASSWORD"
+echo "14. Multiple Hello World services, and multiple DC/OS Websites exposed on L4 and L7 through Edge-LB"
 echo
-echo "The user name that ran this script is $USER so file ownership for kubectl and DC/OS CLI files will be chown'ed to $SUDO_USER"
+echo "15. Create a prod-user in the prod group and a dev-user in the dev group both with the default DC/OS password"
+echo
+echo "16. Install dcos-monitoring and open up Grafana dashboard"
+echo
+echo "17. Open up L4 services in your browser"
+echo
 
 #### MOVE DCOS CLI CLUSTERS TO /TMP/CLUSTERS
 
@@ -305,8 +307,6 @@ done
 
 dcos kafka topic create performancetest --partitions 10 --replication 3 --name=kafka
 
-dcos marathon app add 250-baseline.json
-
 
 #### WAIT FOR BOTH K8S CLUSTERS TO COMPLETE THEIR INSTALL
 
@@ -363,6 +363,8 @@ echo "**** Running kubectl get nodes for /prod/kubernetes-prod"
 echo
 kubectl get nodes
 
+#### DEPLOY KAFKA PRODUCER ON /PROD/KUBERNETES-PROD
+kubectl create -f kafka-producer.yaml
 
 #### INSTALL DKLB
 kubectl create -f dklb-prereqs.yaml
@@ -459,14 +461,6 @@ echo "**** Changing kubectl context back to prod"
 echo
 kubectl config use-context prod
 
-#### INSTALL BINARY SECRET TO DC/OS (NOT K8S)
-
-echo
-echo "**** Adding binary secret /binary-secret to DC/OS's secret store"
-echo "     To display it: dcos security secrets get /binary-secret"
-echo
-dcos security secrets create /binary-secret --file binary-secret.txt
-
 #### SETUP USER PROD-USER & GROUP PROD & SECRET /PROD/SECRET
 
 echo
@@ -483,8 +477,6 @@ dcos security org groups grant prod dcos:service:marathon:marathon:services:/pro
 dcos security org groups grant prod dcos:adminrouter:service:marathon full
 # Appears to be necessary per COPS-2534
 dcos security org groups grant prod dcos:secrets:list:default:/ read
-# Make the marathon folder by making the app
-dcos marathon app add prod-example-marathon-app.json
 
 #### SETUP USER DEV-USER & GROUP DEV & SECRET /DEV/SECRET
 
@@ -510,11 +502,11 @@ rm -f public-key.pem 2> /dev/null
 # This script is ran via sudo since /etc/hosts is modified. But it also sets up kubectl and the dcos CLI
 # which means some of those files now belong to root
 
-echo
-echo "**** Running chown -RH $SUDO_USER ~/.kube ~/.dcos since this script is ran via sudo"
-echo
+#echo
+#echo "**** Running chown -RH $SUDO_USER ~/.kube ~/.dcos since this script is ran via sudo"
+#echo
 # If you ever break out of this script, you must run this command:
-chown -RH $SUDO_USER ~/.kube ~/.dcos
+#chown -RH $SUDO_USER ~/.kube ~/.dcos
 
 #### INSTALL DCOS-MONITORING
 ./install_monitoring.sh
@@ -542,8 +534,17 @@ echo "     L4 (TCP) - dcos-site1 service - port 10004"
 echo "     L4 (TCP) - dcos-site2 service - port 10005"
 echo "     L7 (HTTP) - dcos-site3 service - Defaults to http://mke-l7.ddns.net:82"
 
-open "http://$DKLB_PUBLIC_AGENT_IP:10001"
+open http://$DKLB_PUBLIC_AGENT_IP:10001
+sleep 1
+open http://$DKLB_PUBLIC_AGENT_IP:10002
+sleep 1
+open http://$DKLB_PUBLIC_AGENT_IP:10003
+sleep 1
+open http://$DKLB_PUBLIC_AGENT_IP:10004
+sleep 1
+open http://$DKLB_PUBLIC_AGENT_IP:10005/docs/latest/
 
 echo -e "To enable Mesos Metrics, run \x1B[1m./start_vpn.sh \x1B[0m before executing \x1B[1m./enable_mesos_metrics.sh\x1B[0m"
-
-echo "     If you want to view the Kafka dashboard in Grafana, import dashboard 9018"
+echo
+echo
+echo "If you want to view the Kafka dashboard in Grafana, import dashboard 9018"

@@ -1,0 +1,9 @@
+open http://$DKLB_PUBLIC_AGENT_IP:10001
+sleep 1
+open http://$DKLB_PUBLIC_AGENT_IP:10002
+sleep 1
+open http://$DKLB_PUBLIC_AGENT_IP:10003
+sleep 1
+open http://$DKLB_PUBLIC_AGENT_IP:10004
+sleep 1
+open http://$DKLB_PUBLIC_AGENT_IP:10005/docs/latest/

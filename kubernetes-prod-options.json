@@ -9,7 +9,7 @@
   },
   "kubernetes": {
     "authorization_mode": "RBAC",
-    "high_availability": false,
+    "high_availability": true,
     "use_agent_docker_certs": false,
     "service_cidr": "10.100.0.0/16",
     "control_plane_placement": "[[\"hostname\", \"UNIQUE\"]]",
@@ -18,7 +18,7 @@
       "mem": 4096,
       "disk": 10240
     },
-    "private_node_count": 1,
+    "private_node_count": 2,
     "private_node_placement": "",
     "private_reserved_resources": {
       "kube_cpus": 1,

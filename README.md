@@ -1,46 +1,54 @@
-### SETUP SCRIPT FOR TWO K8S CLUSTERS ON DC/OS ("2k8s")
-Revision 1-25-19
+# SETUP SCRIPT FOR TWO K8S CLUSTERS ON DC/OS ("2k8s")
+Revision 1-30-19
 
 This is a script for Enterprise DC/OS 1.12 that will setup two Kubernetes clusters  
-This script has only been tested on OSX with DC/OS 1.12.1 Enterprise Edition  
+This script has only been tested on OSX with DC/OS >1.12.0 Enterprise Edition  
 
-This script will:
+In the order below, this script will:
 
-1. Install Edge-LB with a configuration to enable proxying kubectl to the two K8s clusters
+1. Move existing DC/OS clusters into /tmp/dcos-clusters and set up a new cluster URL provided
 
-2. Install Mesosphere Kubernetes Engine (MKE)
+2. Update $LICENSE_FILE if it exists in the optional variables section if it exists
 
-3. Install a K8s cluster named /prod/kubernetes-prod  
-   1 private node, RBAC enabled, control plane CPU lowered to 0.5, private reserved resources kube cpus lowered to 1     
+3. Do an ssh-add on the $SSH_KEY_FILE in the optional variables section if it exists
 
-4. Install a K8s cluster named /dev/kubernetes-dev   
-   1 private node, control plane CPU lowered to 0.5, private reserved resources kube cpus lowered to 1  
+4. Move existing kube config to /tmp/kubectl-config so we can set up a new kube config
 
-5. Install a DC/OS license, if it exists
+5. Add repo and install Edge-LB - deploy kubectl pool once completed
 
-6. Install an SSH key to the workstation via ssh-add, if it exists
+6. Set up Service Accounts and Install MKE Kubernetes engine
 
-7. Your existing kubectl config file will be moved to /tmp/kubectl-config, so any existing kubectl configs will be removed
+7. Set up Service Accounts and Install /prod/kubernetes-prod cluster
+- HA Deployment (3x etcd / 3x control-plane), 2 private nodes, RBAC enabled, control plane CPU lowered to 0.5, private reserved resources kube cpus lowered to 1     
 
-8. Your existing DC/OS cluster configs will be moved to /tmp/clusters because of a bug (that might be fixed) when too many clusters are defined, so any existing DC/OS cluster configs will be removed
+8. Set up Service Accounts and Install /dev/kubernetes-dev cluster
+- Non-HA deployment, 1 private node, control plane CPU lowered to 0.5, private reserved resources kube cpus lowered to 1  
 
-9. Deploy the latest DKLB bits for L4/L7 loadbalancing
+9. Install Jenkins in /dev/jenkins
 
-10. Deploy several example web services and expose through L4/L7
+10. Install Kafka - Create a topic called performancetest
 
-11. A Jenkins deployment named /dev/jenkins"
+11. Wait for Kubernetes to complete deployment and connect clusters /dev/kubernetes-dev and /prod/kubernetes-prod using kubectl
 
-12. Deploy dcos-monitoring and open Grafana
+12. Deploy Kafka producer deployment `kafka-producer.yaml` on /prod/kubernetes-prod that sends data to Kafka
 
-13. Deploy Kafka, create a topic, and deploy load generator for grafana visualization
+13. Install DKLB (beta) for L4/L7 Ingress on MKE
 
-#### PREREQUISITES
+14. Multiple Hello World services, and multiple DC/OS Websites exposed on L4 and L7 through Edge-LB
+
+15. Create a prod-user in the prod group and a dev-user in the dev group both with the default DC/OS password
+
+16. Install dcos-monitoring and open up Grafana dashboard
+
+17. Open up L4 services in your browser
+
+## PREREQUISITES
 
 1. The DC/OS CLI and kubectl must already be installed on your local machine
 
 2. Ensure that ports 6443 and 6444 are not blocked by firewall rules
 
-#### SETUP
+## SETUP
 
 1. Clone this repo  
    `git clone https://github.com/ably77/mke-demo.git`  
@@ -79,10 +87,12 @@ SSH_KEY_FILE="/Users/josh/ccm-priv.key"
 
 1. Start a cluster, such as in CCM or TF. Minimum of 9 private agents (m4.xlarge) or 5 private agents (m4.2xlarge), only 1 public agent, DC/OS EE 1.12
 
-2. Copy the master's URL to your clipboard. If it begins with HTTP the script will change it to HTTPS.
+2. Ensure that Port 6443/6444 are at minimum open to your local machine (optional 81,82,10000-10005 as well if you want to see the Kubernetes exposed services in your browser)
 
-3. Modify the Variables section in the runme.sh
+3. Copy the master's URL to your clipboard. If it begins with HTTP the script will change it to HTTPS.
 
-4. `sudo ./runme <MASTER_URL>`
+4. Modify the Variables section in the runme.sh
 
-5. Wait for it to finish (~ 7-10 min)
+5. `./runme <MASTER_URL>`
+
+6. Wait for it to finish (~ 9-12 min)
