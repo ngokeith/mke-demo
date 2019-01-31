@@ -1,0 +1,5 @@
+{
+    "grafana": {
+      "default_dashboards": true
+    }
+  }

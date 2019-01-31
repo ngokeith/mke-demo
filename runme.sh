@@ -27,7 +27,8 @@ EDGE_LB_POOL_LINK="https://edge-lb-infinity-artifacts.s3.amazonaws.com/autodelet
 # BELOW IS MKE VARS FOR BETA TESTING DKLB
 KUBERNETES_STUB_LINK="https://universe-converter.mesosphere.com/transform?url=https://dcos-kubernetes-artifacts.s3.amazonaws.com/nightlies/kubernetes/master/stub-universe-kubernetes.json"
 KUBERNETES_CLUSTER_STUB_LINK="https://universe-converter.mesosphere.com/transform?url=https://dcos-kubernetes-artifacts.s3.amazonaws.com/nightlies/kubernetes-cluster/master/stub-universe-kubernetes-cluster.json"
-
+# VHOST Routing Hostname for L7 Loadbalancing
+VHOST="mke-l7.ddns.net"
 
 #### TEST IF RAN AS ROOT
 
@@ -348,9 +349,71 @@ kubectl get nodes
 kubectl create -f dklb-prereqs.yaml
 kubectl create -f dklb-deployment.yaml
 
-#### DEPLOY AND EXPOSE DCOS-SITE APPS & HELLO-WORLD APPS & REDIS
+#### DEPLOY AND EXPOSE DCOS-SITE (1 and 2) APPS & HELLO-WORLD (1,2, and 3) APPS & REDIS using L4 TCP
 kubectl create -f multi-service-l4.yaml
 
+#### DEPLOY AND EXPOSE DCOS-SITE (3 and 4) APPS & HELLO-WORLD (4 and 5) APPS using L7 TCP
+cat <<EOF >> l7-ingress.yaml
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: edgelb
+    kubernetes.dcos.io/edgelb-pool-name: dklb
+    kubernetes.dcos.io/edgelb-pool-port: "80"
+  labels:
+    owner: dklb
+  name: helloworld4-ig
+spec:
+  rules:
+  - host: "$VHOST"
+    http:
+      paths:
+      - backend:
+          serviceName: hello-world4
+          servicePort: 80
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: edgelb
+    kubernetes.dcos.io/edgelb-pool-name: dklb
+    kubernetes.dcos.io/edgelb-pool-port: "81"
+  labels:
+    owner: dklb
+  name: helloworld5-ig
+spec:
+  rules:
+  - host: "$VHOST"
+    http:
+      paths:
+      - backend:
+          serviceName: hello-world5
+          servicePort: 80
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: edgelb
+    kubernetes.dcos.io/edgelb-pool-name: dklb
+    kubernetes.dcos.io/edgelb-pool-port: "82"
+  labels:
+    owner: dklb
+  name: dcos-site3
+spec:
+  rules:
+  - host: "$VHOST"
+    http:
+      paths:
+      - backend:
+          serviceName: dcos-site3
+          servicePort: 80
+EOF
+
+kubectl create -f l7-ingress.yaml
 
 #### SETUP KUBECTL FOR /DEV/KUBERNETES-DEV
 
@@ -435,11 +498,10 @@ echo
 chown -RH $SUDO_USER ~/.kube ~/.dcos
 
 #### Opening dklb-pool-1 workloads
-# This is a real hack, and it might not work correctly!
 echo "     Sleeping for 30 seconds to make sure sufficient time has been given for the app and Edgelb pool to deploy"
 sleep 30
 echo
-echo "**** Setting env var DKLB_PUBLIC_AGENT_IP using a hack of a method"
+echo "**** Setting env var DKLB_PUBLIC_AGENT_IP"
 echo
 export DKLB_PUBLIC_AGENT_IP=$(dcos task exec -it dcos-edgelb.pools.dklb curl ifconfig.co | tr -d '\r' | tr -d '\n')
 echo Public IP of DKLB Edge-LB node is: $DKLB_PUBLIC_AGENT_IP
@@ -451,10 +513,15 @@ echo "     By default, CCM should have open security group rules for the ELB whi
 echo
 echo
 echo "     Here are the workloads below:"
-echo "     hello-world1 service - port 10001"
-echo "     hello-world2 service - port 10002"
-echo "     hello-world3 service - port 10003"
-echo "     dcos-site1 service - port 10004"
-echo "     dcos-site2 service - port 10005"
+echo "     L4 (TCP) - hello-world1 service - port 10001"
+echo "     L4 (TCP) - hello-world2 service - port 10002"
+echo "     L4 (TCP) - hello-world3 service - port 10003"
+echo "     L7 (HTTP) - hello-world4 service - Defaults to http://mke-l7.ddns.net:80"
+echo "     L7 (HTTP) - hello-world5 service - Defaults to http://mke-l7.ddns.net:81"
+echo "     L4 (TCP) - dcos-site1 service - port 10004"
+echo "     L4 (TCP) - dcos-site2 service - port 10005"
+echo "     L7 (HTTP) - dcos-site3 service - Defaults to http://mke-l7.ddns.net:82
 
 open "http://$DKLB_PUBLIC_AGENT_IP:10001"
+
+echo "     To install dcos-monitoring for your cluster please run ./install_monitoring.sh"

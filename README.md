@@ -48,17 +48,25 @@ Default variables below:
 ```
 ######## VARIABLES ########
 
-SCRIPT_VERSION="JAN-25-2019"
-LICENSE_FILE="<insert/path/here>"
-EDGE_LB_VERSION="1.2.3-42-g6643742"
+SCRIPT_VERSION="JAN-30-2019"
+LICENSE_FILE="dcos-1-12-license-50-nodes.txt"
+JENKINS_VERSION="3.5.2-2.107.2"
+#KEEP FOR OLD STABLE - EDGE_LB_VERSION="1.2.3-42-g6643742"
 K8S_MKE_VERSION="stub-universe"
 K8S_PROD_VERSION="stub-universe"
 K8S_DEV_VERSION="stub-universe"
-SSH_KEY_FILE="<insert/path/here>"
+SSH_KEY_FILE="/Users/josh/ccm-priv.key"
 DCOS_USER="bootstrapuser"
 DCOS_PASSWORD="deleteme"
+
+# BELOW IS EDGELB VARS FOR BETA TESTING DKLB
+EDGE_LB_LINK="https://edge-lb-infinity-artifacts.s3.amazonaws.com/autodelete7d/v1.2.3-111-gc28ece3/edgelb/stub-universe-edgelb.json"
+EDGE_LB_POOL_LINK="https://edge-lb-infinity-artifacts.s3.amazonaws.com/autodelete7d/v1.2.3-111-gc28ece3/edgelb-pool/stub-universe-edgelb-pool.json"
+# BELOW IS MKE VARS FOR BETA TESTING DKLB
 KUBERNETES_STUB_LINK="https://universe-converter.mesosphere.com/transform?url=https://dcos-kubernetes-artifacts.s3.amazonaws.com/nightlies/kubernetes/master/stub-universe-kubernetes.json"
 KUBERNETES_CLUSTER_STUB_LINK="https://universe-converter.mesosphere.com/transform?url=https://dcos-kubernetes-artifacts.s3.amazonaws.com/nightlies/kubernetes-cluster/master/stub-universe-kubernetes-cluster.json"
+# VHOST Routing Hostname for L7 Loadbalancing
+VHOST="mke-l7.ddns.net"
 ```
 
 #### USAGE
