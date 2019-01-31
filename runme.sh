@@ -450,6 +450,9 @@ echo "**** Running kubectl get nodes for /dev/kubernetes-dev"
 echo
 kubectl get nodes
 
+#### DEPLOY KAFKA PRODUCER ON /DEV/KUBERNETES-DEV
+kubectl create -f kafka-producer.yaml
+
 #### SHOW KUBECTL CONFIG
 
 echo
@@ -535,7 +538,7 @@ echo "     L7 (HTTP) - hello-world5 service - Defaults to http://mke-l7.ddns.net
 echo "     L4 (TCP) - dcos-site1 service - port 10004"
 echo "     L4 (TCP) - dcos-site2 service - port 10005"
 echo "     L7 (HTTP) - dcos-site3 service - Defaults to http://mke-l7.ddns.net:82"
-
+echo
 open http://$DKLB_PUBLIC_AGENT_IP:10001
 sleep 1
 open http://$DKLB_PUBLIC_AGENT_IP:10002
@@ -545,8 +548,12 @@ sleep 1
 open http://$DKLB_PUBLIC_AGENT_IP:10004
 sleep 1
 open http://$DKLB_PUBLIC_AGENT_IP:10005/docs/latest/
-
+echo
+echo
 echo -e "To enable Mesos Metrics, run \x1B[1m./start_vpn.sh \x1B[0m before executing \x1B[1m./enable_mesos_metrics.sh\x1B[0m"
 echo
 echo
 echo "If you want to view the Kafka dashboard in Grafana, import dashboard 9018"
+echo
+echo
+echo
