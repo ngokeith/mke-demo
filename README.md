@@ -19,7 +19,7 @@ In the order below, this script will:
 6. Set up Service Accounts and Install MKE Kubernetes engine
 
 7. Set up Service Accounts and Install /prod/kubernetes-prod cluster
-- HA Deployment (3x etcd / 3x control-plane), 2 private nodes, RBAC enabled, control plane CPU lowered to 0.5, private reserved resources kube cpus lowered to 1     
+- HA Deployment (3x etcd / 3x control-plane), 3 private nodes, RBAC enabled, control plane CPU lowered to 0.5, private reserved resources kube cpus lowered to 1     
 
 8. Set up Service Accounts and Install /dev/kubernetes-dev cluster
 - Non-HA deployment, 1 private node, control plane CPU lowered to 0.5, private reserved resources kube cpus lowered to 1  
