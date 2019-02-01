@@ -30,4 +30,4 @@ dcos beta-dcos-monitoring plan show deploy --name=dcos-monitoring
 #launch Chrome with Grafana Dashboard
 echo "Accessing Grafana Dashboard in a new browser tab."
 
-open `dcos config show core.dcos_url`/service/dcos-monitoring/grafana/
+open -na "/Applications/Google Chrome.app"/ `dcos config show core.dcos_url`/service/dcos-monitoring/grafana/

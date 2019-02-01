@@ -2,7 +2,7 @@
 
 ######## REQUIRED VARIABLES ########
 
-SCRIPT_VERSION="JAN-30-2019"
+SCRIPT_VERSION="FEB-1-2019"
 JENKINS_VERSION="3.5.2-2.107.2"
 KAFKA_VERSION="2.3.0-1.1.0"
 K8S_MKE_VERSION="stub-universe"
@@ -370,70 +370,7 @@ kubectl create -f dklb-prereqs.yaml
 kubectl create -f dklb-deployment.yaml
 
 #### DEPLOY AND EXPOSE DCOS-SITE (1 and 2) APPS & HELLO-WORLD (1,2, and 3) APPS & REDIS using L4 TCP
-kubectl create -f multi-service-l4.yaml
-
-#### DEPLOY AND EXPOSE DCOS-SITE (3 and 4) APPS & HELLO-WORLD (4 and 5) APPS using L7 TCP
-cat <<EOF > l7-ingress.yaml
----
-apiVersion: extensions/v1beta1
-kind: Ingress
-metadata:
-  annotations:
-    kubernetes.io/ingress.class: edgelb
-    kubernetes.dcos.io/edgelb-pool-name: dklb
-    kubernetes.dcos.io/edgelb-pool-port: "80"
-  labels:
-    owner: dklb
-  name: helloworld4-ig
-spec:
-  rules:
-  - host: "$VHOST"
-    http:
-      paths:
-      - backend:
-          serviceName: hello-world4
-          servicePort: 80
----
-apiVersion: extensions/v1beta1
-kind: Ingress
-metadata:
-  annotations:
-    kubernetes.io/ingress.class: edgelb
-    kubernetes.dcos.io/edgelb-pool-name: dklb
-    kubernetes.dcos.io/edgelb-pool-port: "81"
-  labels:
-    owner: dklb
-  name: helloworld5-ig
-spec:
-  rules:
-  - host: "$VHOST"
-    http:
-      paths:
-      - backend:
-          serviceName: hello-world5
-          servicePort: 80
----
-apiVersion: extensions/v1beta1
-kind: Ingress
-metadata:
-  annotations:
-    kubernetes.io/ingress.class: edgelb
-    kubernetes.dcos.io/edgelb-pool-name: dklb
-    kubernetes.dcos.io/edgelb-pool-port: "82"
-  labels:
-    owner: dklb
-  name: dcos-site3
-spec:
-  rules:
-  - host: "$VHOST"
-    http:
-      paths:
-      - backend:
-          serviceName: dcos-site3
-          servicePort: 80
-EOF
-
-kubectl create -f l7-ingress.yaml
+kubectl create -f multi-service.yaml
 
 #### SETUP KUBECTL FOR /DEV/KUBERNETES-DEV
 
@@ -563,24 +500,39 @@ echo "     L7 (HTTP) - dcos-site3 service - Defaults to http://mke-l7.ddns.net:8
 echo
 echo
 echo
+
+#### WAIT FOR SERVICES TO BE EXPOSED BY EDGELB
+seconds=0
+OUTPUT=1
+while [ "$OUTPUT" != 0 ]; do
+  seconds=$((seconds+10))
+  if curl -s -H "Host: mke-l7.ddns.net" $DKLB_PUBLIC_AGENT_IP | grep -q "Hello"; then
+      OUTPUT=0
+  else
+      printf "Waited $seconds seconds for L4/L7 services to be exposed. Still waiting.\n"
+      sleep 10
+  fi
+done
+
+#### OPEN WORKLOADS
 echo "Opening workloads..."
 echo
 echo
-open http://$DKLB_PUBLIC_AGENT_IP:10001
+open -na "/Applications/Google Chrome.app"/ http://$DKLB_PUBLIC_AGENT_IP:10001
 sleep 1
-open http://$DKLB_PUBLIC_AGENT_IP:10002
+open -na "/Applications/Google Chrome.app"/ http://$DKLB_PUBLIC_AGENT_IP:10002
 sleep 1
-open http://$DKLB_PUBLIC_AGENT_IP:10003
+open -na "/Applications/Google Chrome.app"/ http://$DKLB_PUBLIC_AGENT_IP:10003
 sleep 1
-open http://mke-l7.ddns.net:80
+open -na "/Applications/Google Chrome.app"/ http://mke-l7.ddns.net:80
 sleep 1
-open http://mke-l7.ddns.net:81
+open -na "/Applications/Google Chrome.app"/ http://mke-l7.ddns.net:81
 sleep 1
-open http://$DKLB_PUBLIC_AGENT_IP:10004
+open -na "/Applications/Google Chrome.app"/ http://$DKLB_PUBLIC_AGENT_IP:10004
 sleep 1
-open http://$DKLB_PUBLIC_AGENT_IP:10005/docs/latest/
+open -na "/Applications/Google Chrome.app"/ http://$DKLB_PUBLIC_AGENT_IP:10005/docs/latest/
 sleep 1
-open http://mke-l7.ddns.net:82
+open -na "/Applications/Google Chrome.app"/ http://mke-l7.ddns.net:82
 echo
 echo
 echo -e "To enable Mesos Metrics, run \x1B[1m./start_vpn.sh \x1B[0m before executing \x1B[1m./enable_mesos_metrics.sh\x1B[0m"

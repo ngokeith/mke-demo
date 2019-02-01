@@ -1,0 +1,62 @@
+#### DEPLOY AND EXPOSE DCOS-SITE (3 and 4) APPS & HELLO-WORLD (4 and 5) APPS using L7 TCP
+cat <<EOF > l7-ingress.yaml
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: edgelb
+    kubernetes.dcos.io/edgelb-pool-name: dklb
+    kubernetes.dcos.io/edgelb-pool-port: "80"
+  labels:
+    owner: dklb
+  name: helloworld4-ig
+spec:
+  rules:
+  - host: "$VHOST"
+    http:
+      paths:
+      - backend:
+          serviceName: hello-world4
+          servicePort: 80
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: edgelb
+    kubernetes.dcos.io/edgelb-pool-name: dklb
+    kubernetes.dcos.io/edgelb-pool-port: "81"
+  labels:
+    owner: dklb
+  name: helloworld5-ig
+spec:
+  rules:
+  - host: "$VHOST"
+    http:
+      paths:
+      - backend:
+          serviceName: hello-world5
+          servicePort: 80
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: edgelb
+    kubernetes.dcos.io/edgelb-pool-name: dklb
+    kubernetes.dcos.io/edgelb-pool-port: "82"
+  labels:
+    owner: dklb
+  name: dcos-site3
+spec:
+  rules:
+  - host: "$VHOST"
+    http:
+      paths:
+      - backend:
+          serviceName: dcos-site3
+          servicePort: 80
+EOF
+
+kubectl create -f l7-ingress.yaml

@@ -365,3 +365,60 @@ spec:
   selector:
     app: dcos-site3
   type: NodePort
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: edgelb
+    kubernetes.dcos.io/edgelb-pool-name: dklb
+    kubernetes.dcos.io/edgelb-pool-port: "80"
+  labels:
+    owner: dklb
+  name: helloworld4-ig
+spec:
+  rules:
+  - host: "mke-l7.ddns.net"
+    http:
+      paths:
+      - backend:
+          serviceName: hello-world4
+          servicePort: 80
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: edgelb
+    kubernetes.dcos.io/edgelb-pool-name: dklb
+    kubernetes.dcos.io/edgelb-pool-port: "81"
+  labels:
+    owner: dklb
+  name: helloworld5-ig
+spec:
+  rules:
+  - host: "mke-l7.ddns.net"
+    http:
+      paths:
+      - backend:
+          serviceName: hello-world5
+          servicePort: 80
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: edgelb
+    kubernetes.dcos.io/edgelb-pool-name: dklb
+    kubernetes.dcos.io/edgelb-pool-port: "82"
+  labels:
+    owner: dklb
+  name: dcos-site3
+spec:
+  rules:
+  - host: "mke-l7.ddns.net"
+    http:
+      paths:
+      - backend:
+          serviceName: dcos-site3
+          servicePort: 80

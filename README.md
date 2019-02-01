@@ -1,5 +1,5 @@
 # Setup Script for Two K8s Clusters on DC/OS ("2k8s")
-Revision 1-31-19
+Revision 2-1-19
 
 This is a script for Enterprise DC/OS 1.12 that will setup two Kubernetes clusters with L4/L7 Ingress, a Prometheus/Grafana monitoring stack, and a Kafka monitoring demonstration  
 This script has only been tested on OSX with DC/OS >1.12.0 Enterprise Edition  
@@ -45,6 +45,14 @@ In the order below, this script will:
 ## PREREQUISITES
 
 1. The DC/OS CLI and kubectl must already be installed on your local machine
+
+You can install the DC/OS CLI for Mac OSX below:
+```
+[ -d /usr/local/bin ] || sudo mkdir -p /usr/local/bin &&
+curl https://downloads.dcos.io/binaries/cli/darwin/x86-64/dcos-1.12/dcos -o dcos &&
+sudo mv dcos /usr/local/bin &&
+sudo chmod +x /usr/local/bin/dcos
+```
 
 2. Ensure that ports 6443 and 6444 are not blocked by firewall rules (optional 81,82,10000-10005 as well if you want to see the Kubernetes exposed services in your browser)
 
