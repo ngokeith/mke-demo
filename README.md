@@ -64,33 +64,6 @@ sudo chmod +x /usr/local/bin/dcos
 
 2. Optional: Modify the variables section in the `runme.sh`
 
-Default variables below:
-```
-######## REQUIRED VARIABLES ########
-
-SCRIPT_VERSION="JAN-30-2019"
-JENKINS_VERSION="3.5.2-2.107.2"
-KAFKA_VERSION="2.3.0-1.1.0"
-K8S_MKE_VERSION="stub-universe"
-K8S_PROD_VERSION="stub-universe"
-K8S_DEV_VERSION="stub-universe"
-DCOS_USER="bootstrapuser"
-DCOS_PASSWORD="deleteme"
-#KEEP FOR OLD STABLE - EDGE_LB_VERSION="1.2.3-42-g6643742"
-# BELOW IS EDGELB VARS FOR BETA TESTING DKLB
-EDGE_LB_LINK="https://edge-lb-infinity-artifacts.s3.amazonaws.com/autodelete7d/v1.2.3-111-gc28ece3/edgelb/stub-universe-edgelb.json"
-EDGE_LB_POOL_LINK="https://edge-lb-infinity-artifacts.s3.amazonaws.com/autodelete7d/v1.2.3-111-gc28ece3/edgelb-pool/stub-universe-edgelb-pool.json"
-# BELOW IS MKE VARS FOR BETA TESTING DKLB
-KUBERNETES_STUB_LINK="https://universe-converter.mesosphere.com/transform?url=https://dcos-kubernetes-artifacts.s3.amazonaws.com/nightlies/kubernetes/master/stub-universe-kubernetes.json"
-KUBERNETES_CLUSTER_STUB_LINK="https://universe-converter.mesosphere.com/transform?url=https://dcos-kubernetes-artifacts.s3.amazonaws.com/nightlies/kubernetes-cluster/master/stub-universe-kubernetes-cluster.json"
-# VHOST Routing Hostname for L7 Loadbalancing
-VHOST="mke-l7.ddns.net"
-
-######## OPTIONAL VARIABLES ########
-LICENSE_FILE="dcos-1-12-license-50-nodes.txt"
-SSH_KEY_FILE="/Users/josh/ccm-priv.key"
-```
-
 #### USAGE
 
 1. Start a cluster, such as in CCM or TF. Minimum of 9 private agents (m4.xlarge) or 5 private agents (m4.2xlarge), only 1 public agent, DC/OS EE 1.12
