@@ -2,7 +2,7 @@
 dcos package install tunnel-cli --cli --yes
 
 # Install dcos-monitoring package
-dcos package install beta-dcos-monitoring --options=grafana_options.json --package-version=v0.4.2-beta --yes
+dcos package install beta-dcos-monitoring --options=monitoring-options.json --package-version=v0.4.2-beta --yes
 
 echo -e "Run: \x1B[1mdcos beta-dcos-monitoring plan show deploy\x1B[0m to see the installation status. "
 echo "Sleeping for 15sec"

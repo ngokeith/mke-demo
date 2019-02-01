@@ -1,0 +1,85 @@
+{
+  "service": {
+    "name": "dcos-monitoring",
+    "user": "nobody",
+    "service_account": "",
+    "service_account_secret": "",
+    "log_level": "INFO"
+  },
+  "prometheus": {
+    "cpus": 2,
+    "mem": 4096,
+    "volume": {
+      "type": "ROOT",
+      "size": 25000,
+      "profile": ""
+    },
+    "interval": 30,
+    "timeout": 25,
+    "dcos_metrics_node_port": 61091,
+    "storage_tsdb_retention": "15d",
+    "admin_router_proxy": {
+      "enabled": true,
+      "url": ""
+    },
+    "alert_rules_repository": {
+      "url": "",
+      "path": "",
+      "reference_name": "",
+      "credentials": {
+        "username": "",
+        "password": "",
+        "deploy_key": ""
+      }
+    }
+  },
+  "grafana": {
+    "cpus": 1,
+    "mem": 4096,
+    "data_volume": {
+      "type": "ROOT",
+      "size": 512,
+      "profile": ""
+    },
+    "ui_port": 3000,
+    "admin_router_proxy": true,
+    "public": false,
+    "admin_credentials": {
+      "username": "",
+      "password": ""
+    },
+    "placement_constraints": "",
+    "default_dashboards": true,
+    "dashboard_config_repository": {
+      "url": "",
+      "path": "",
+      "reference_name": "",
+      "credentials": {
+        "username": "",
+        "password": "",
+        "deploy_key": ""
+      }
+    }
+  },
+  "alertmanager": {
+    "cpus": 1,
+    "mem": 1024,
+    "data_volume": {
+      "type": "ROOT",
+      "size": 512,
+      "profile": ""
+    },
+    "secrets": {
+      "slack_api_url": ""
+    },
+    "config_repository": {
+      "url": "",
+      "path": "",
+      "credentials": {
+        "username": "",
+        "password": "",
+        "deploy_key": ""
+      }
+    }
+  }
+}

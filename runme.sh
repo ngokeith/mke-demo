@@ -81,7 +81,7 @@ echo "15. Create a prod-user in the prod group and a dev-user in the dev group b
 echo
 echo "16. Install dcos-monitoring and open up Grafana dashboard"
 echo
-echo "17. Open up L4 services in your browser"
+echo "17. Open up L4/L7 services in your browser"
 echo
 
 #### MOVE DCOS CLI CLUSTERS TO /TMP/CLUSTERS
@@ -319,7 +319,7 @@ seconds=0
 OUTPUT=1
 while [ "$OUTPUT" != 0 ]; do
   # since the public kubelet is the last to deploy, we will monitor it
-  OUTPUT=`dcos kubernetes cluster debug plan status deploy --cluster-name=prod/kubernetes-prod | grep kube-node-0 | awk '{print $4}'`;
+  OUTPUT=`dcos kubernetes cluster debug plan status deploy --cluster-name=prod/kubernetes-prod | grep kube-node-1 | awk '{print $4}'`;
   if [ "$OUTPUT" = "(COMPLETE)" ];then
         OUTPUT=0
   fi
@@ -531,18 +531,19 @@ echo
 rm -f /tmp/hosts 2> /dev/null
 cp /etc/hosts /tmp
 
-if [ -n "$(grep www.mke-l7.ddns.net /etc/hosts)" ]; then
-    echo "**** www.mke-l7.ddns.net line found in /etc/hosts, removing that line";
+if [ -n "$(grep mke-l7.ddns.net /etc/hosts)" ]; then
+    echo "**** mke-l7.ddns.net line found in /etc/hosts, removing that line";
     echo
     sed -i '' '/mke-l7.ddns.net/d' /etc/hosts
 else
-    echo "**** www.mke-l7.ddns.net was not found in /etc/hosts";
+    echo "**** mke-l7.ddns.net was not found in /etc/hosts";
     echo
 fi
 
-echo "**** Adding entries to /etc/hosts for www.mke-l7.ddns.net for $DKLB_PUBLIC_AGENT_IP"
+echo "**** Adding entries to /etc/hosts for mke-l7.ddns.net for $DKLB_PUBLIC_AGENT_IP"
 echo "$DKLB_PUBLIC_AGENT_IP mke-l7.ddns.net" >> /etc/hosts
 # to bypass DNS & hosts file: curl -H "Host: www.apache.test" $EDGELB_PUBLIC_AGENT_IP
+
 
 
 echo "     Opening your browser to $DKLB_PUBLIC_AGENT_IP:80,8080,8181,10004,10005"
