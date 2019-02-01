@@ -7,8 +7,8 @@
     "log_level": "INFO"
   },
   "prometheus": {
-    "cpus": 2,
-    "mem": 4096,
+    "cpus": 1,
+    "mem": 2048,
     "volume": {
       "type": "ROOT",
       "size": 25000,
@@ -35,7 +35,7 @@
   },
   "grafana": {
     "cpus": 1,
-    "mem": 4096,
+    "mem": 2048,
     "data_volume": {
       "type": "ROOT",
       "size": 512,
