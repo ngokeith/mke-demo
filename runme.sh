@@ -531,10 +531,10 @@ echo
 rm -f /tmp/hosts 2> /dev/null
 cp /etc/hosts /tmp
 
-if [ -n "$(grep www.apache.test /etc/hosts)" ]; then
+if [ -n "$(grep www.mke-l7.ddns.net /etc/hosts)" ]; then
     echo "**** www.mke-l7.ddns.net line found in /etc/hosts, removing that line";
     echo
-    sed -i '' '/www.mke-l7.ddns.net' /etc/hosts
+    sed -i '' '/mke-l7.ddns.net/d' /etc/hosts
 else
     echo "**** www.mke-l7.ddns.net was not found in /etc/hosts";
     echo
