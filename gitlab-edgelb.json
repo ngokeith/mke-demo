@@ -1,0 +1,50 @@
+{
+	"apiVersion": "V2",
+	"name": "gitlab-edgelb",
+	"count": 1,
+	"haproxy": {
+		"frontends": [{
+				"bindPort": 10006,
+				"protocol": "HTTP",
+				"linkBackend": {
+					"defaultBackend": "gitlab-prod"
+				}
+			},
+			{
+				"bindPort": 10007,
+				"protocol": "HTTP",
+				"linkBackend": {
+					"defaultBackend": "gitlab-dev"
+				}
+			}
+		],
+		"backends": [{
+				"name": "gitlab-prod",
+				"protocol": "HTTP",
+				"services": [{
+					"marathon": {
+						"serviceID": "/prod/gitlab-prod"
+					},
+					"endpoint": {
+						"portName": "http"
+					}
+				}]
+			},
+			{
+				"name": "gitlab-dev",
+				"protocol": "HTTP",
+				"services": [{
+					"marathon": {
+						"serviceID": "/dev/gitlab-dev"
+					},
+					"endpoint": {
+						"portName": "http"
+					}
+				}]
+			}
+		],
+		"stats": {
+			"bindPort": 6091
+		}
+	}
+}

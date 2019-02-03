@@ -1,0 +1,8 @@
+{
+  "service": {
+    "name": "prod/jenkins"
+  },
+  "storage": {
+    "host-volume": "/efs/prod/prod-jenkins"
+  }
+}

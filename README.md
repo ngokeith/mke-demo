@@ -1,5 +1,5 @@
 # Setup Script for Two K8s Clusters on DC/OS ("2k8s")
-Revision 2-1-19
+Revision 2-2-19
 
 This is a script for Enterprise DC/OS 1.12 that will setup two Kubernetes clusters with L4/L7 Ingress, a Prometheus/Grafana monitoring stack, and a Kafka monitoring demonstration  
 This script has only been tested on OSX with DC/OS >1.12.0 Enterprise Edition  
@@ -26,21 +26,23 @@ In the order below, this script will:
 
 9. Install Jenkins in /dev/jenkins
 
-10. Install Kafka - Create a topic called performancetest
+10. Install Gitlab in /prod/gitlab-prod and /dev/gitlab-dev, expose gitlab-prod and gitlab-dev on your EDGELB_PUBLIC_AGENT_IP:<10006/10007>
 
-11. Wait for Kubernetes to complete deployment and connect clusters /dev/kubernetes-dev and /prod/kubernetes-prod using kubectl
+11. Install Kafka - Create a topic called performancetest
 
-12. Deploy Kafka producer deployment `kafka-producer.yaml` on /prod/kubernetes-prod that sends data to Kafka
+12. Wait for Kubernetes to complete deployment and connect clusters /dev/kubernetes-dev and /prod/kubernetes-prod using kubectl
 
-13. Install DKLB (beta) for L4/L7 Ingress on MKE
+13. Deploy Kafka producer deployment `kafka-producer.yaml` on /prod/kubernetes-prod that sends data to Kafka
 
-14. Multiple Hello World services, and multiple DC/OS Websites exposed on L4 and L7 through Edge-LB
+14. Install DKLB (beta) for L4/L7 Ingress on MKE
 
-15. Create a prod-user in the prod group and a dev-user in the dev group both with the default DC/OS password
+15. Multiple Hello World services, and multiple DC/OS Websites exposed on L4 and L7 through Edge-LB
 
-16. Install dcos-monitoring and open up Grafana dashboard
+16. Create a prod-user in the prod group and a dev-user in the dev group both with the default DC/OS password
 
-17. Open up L4 and L7 services in your browser
+17. Install dcos-monitoring and open up Grafana dashboard
+
+18. Open up L4 and L7 services in your browser
 
 ## PREREQUISITES
 

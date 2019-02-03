@@ -2,7 +2,7 @@
 
 ######## REQUIRED VARIABLES ########
 
-SCRIPT_VERSION="FEB-1-2019"
+SCRIPT_VERSION="FEB-2-2019"
 JENKINS_VERSION="3.5.2-2.107.2"
 KAFKA_VERSION="2.3.0-1.1.0"
 K8S_MKE_VERSION="stub-universe"
@@ -67,21 +67,23 @@ echo "8. Set up Service Accounts and Install /dev/kubernetes-dev cluster"
 echo
 echo "9. Install Jenkins in /dev/jenkins"
 echo
-echo "10. Install Kafka - Create a topic called performancetest"
+echo "10. Install Gitlab in /prod/gitlab-prod and /dev/gitlab-dev, expose gitlab-prod and gitlab-dev on your EDGELB_PUBLIC_AGENT_IP:<10006/10007>"
 echo
-echo "11. Wait for Kubernetes to complete deployment and connect clusters /dev/kubernetes-dev and /prod/kubernetes-prod using kubectl"
+echo "11. Install Kafka - Create a topic called performancetest"
 echo
-echo "12. Deploy Kafka producer deployment `kafka-producer.yaml` on /prod/kubernetes-prod that sends data to Kafka"
+echo "12. Wait for Kubernetes to complete deployment and connect clusters /dev/kubernetes-dev and /prod/kubernetes-prod using kubectl"
 echo
-echo "13. Install DKLB (beta) for L4/L7 Ingress on MKE"
+echo "13. Deploy Kafka producer deployment `kafka-producer.yaml` on /prod/kubernetes-prod that sends data to Kafka"
 echo
-echo "14. Multiple Hello World services, and multiple DC/OS Websites exposed on L4 and L7 through Edge-LB"
+echo "14. Install DKLB (beta) for L4/L7 Ingress on MKE"
 echo
-echo "15. Create a prod-user in the prod group and a dev-user in the dev group both with the default DC/OS password"
+echo "15. Multiple Hello World services, and multiple DC/OS Websites exposed on L4 and L7 through Edge-LB"
 echo
-echo "16. Install dcos-monitoring and open up Grafana dashboard"
+echo "16. Create a prod-user in the prod group and a dev-user in the dev group both with the default DC/OS password"
 echo
-echo "17. Open up L4/L7 services in your browser"
+echo "17. Install dcos-monitoring and open up Grafana dashboard"
+echo
+echo "18. Open up L4/L7 services in your browser"
 echo
 
 #### MOVE DCOS CLI CLUSTERS TO /TMP/CLUSTERS
@@ -217,15 +219,6 @@ dcos edgelb status edgelb-kubectl-two-clusters
 #echo
 #dcos edgelb show edgelb-kubectl-two-clusters
 
-#### GET PUBLIC IP OF EDGE-LB PUBLIC AGENT
-
-# This is a real hack, and it might not work correctly!
-echo
-echo "**** Setting env var EDGELB_PUBLIC_AGENT_IP using a hack of a method"
-echo
-export EDGELB_PUBLIC_AGENT_IP=$(dcos task exec -it edgelb-pool-0-server curl ifconfig.co | tr -d '\r' | tr -d '\n')
-echo Public IP of Edge-LB node is: $EDGELB_PUBLIC_AGENT_IP
-# NOTE, if that approach to finding the public IP doesn't work, consider https://github.com/ably77/dcos-se/tree/master/Kubernetes/mke/public_ip
 
 #### ADD LATEST MKE STUB UNIVERSE that supports dklb
 dcos package repo add --index=0 kubernetes-aws "$KUBERNETES_STUB_LINK"
@@ -281,6 +274,20 @@ echo
 echo "**** Installing Jenkins v$JENKINS_VERSION to /dev"
 echo
 dcos package install jenkins --package-version=$JENKINS_VERSION --options=jenkins-options.json --yes
+
+#### INSTALL /PROD/GITLAB-PROD AND /DEV/GITLAB-DEV
+echo
+echo "**** Installing Gitlab /prod/gitlab-prod"
+dcos marathon app add gitlab-prod.json
+
+echo
+echo "**** Deploy Gitlab /dev/gitlab-dev"
+dcos marathon app add gitlab-dev.json
+
+#### INSTALL GITLAB EDGELB POOL
+echo
+echo "**** Deploying Gitlab Edge-LB Pool"
+dcos edgelb create gitlab-edgelb.json
 
 #### INSTALL KAFKA
 KAFKA_VERSION="2.3.0-1.1.0"
@@ -348,6 +355,14 @@ echo
 echo "**** /dev/kubernetes-dev install complete"
 echo
 
+#### GET PUBLIC IP OF EDGE-LB PUBLIC AGENT
+echo
+echo "**** Setting env var EDGELB_PUBLIC_AGENT_IP"
+echo
+export EDGELB_PUBLIC_AGENT_IP=$(dcos task exec -it kubectl-two-clusters__edgelb-pool- curl ifconfig.co | tr -d '\r' | tr -d '\n')
+echo Public IP of Edge-LB node is: $EDGELB_PUBLIC_AGENT_IP
+# NOTE, if that approach to finding the public IP doesn't work, consider https://github.com/ably77/dcos-se/tree/master/Kubernetes/mke/public_ip
+
 #### SETUP KUBECTL FOR /PROD/KUBERNETES-PROD
 
 echo
@@ -370,7 +385,8 @@ kubectl create -f dklb-prereqs.yaml
 kubectl create -f dklb-deployment.yaml
 
 #### DEPLOY AND EXPOSE DCOS-SITE (1 and 2) APPS & HELLO-WORLD (1,2, and 3) APPS & REDIS using L4 TCP
-kubectl create -f multi-service.yaml
+kubectl create -f multi-service-l4.yaml
+kubectl create -f multi-service-l7.yaml
 
 #### SETUP KUBECTL FOR /DEV/KUBERNETES-DEV
 
@@ -477,29 +493,32 @@ else
     echo
 fi
 
+if [ -n "$(grep dcos-gitlabdemo.ddns.net /etc/hosts)" ]; then
+    echo "**** dcos-gitlabdemo.ddns.net line found in /etc/hosts, removing that line";
+    echo
+    sed -i '' '/dcos-gitlabdemo.ddns.net/d' /etc/hosts
+else
+    echo "**** dcos-gitlabdemo.ddns.net was not found in /etc/hosts";
+    echo
+fi
+
 echo "**** Adding entries to /etc/hosts for mke-l7.ddns.net for $DKLB_PUBLIC_AGENT_IP"
 echo "$DKLB_PUBLIC_AGENT_IP mke-l7.ddns.net" >> /etc/hosts
+echo "$EDGELB_PUBLIC_AGENT_IP dcos-gitlabdemo.ddns.net" >> /etc/hosts
 # to bypass DNS & hosts file: curl -H "Host: www.apache.test" $EDGELB_PUBLIC_AGENT_IP
 
 
 
-echo "     Opening your browser to $DKLB_PUBLIC_AGENT_IP:80,8080,8181,10004,10005"
+echo "     Opening your browser to $DKLB_PUBLIC_AGENT_IP:80,81"
 echo "     NOTE: If having connectivity issues, make sure that Public Agent LB is open for non 80/443 ports"
 echo "     By default, CCM should have open security group rules for the ELB while the DCOS-terraform project only allows 80/443"
 echo
 echo
 echo "     Here are the workloads below:"
-echo "     L4 (TCP) - hello-world1 service - port 10001"
-echo "     L4 (TCP) - hello-world2 service - port 10002"
-echo "     L4 (TCP) - hello-world3 service - port 10003"
-echo "     L7 (HTTP) - hello-world4 service - Defaults to http://mke-l7.ddns.net:80"
-echo "     L7 (HTTP) - hello-world5 service - Defaults to http://mke-l7.ddns.net:81"
-echo "     L4 (TCP) - dcos-site1 service - port 10004"
-echo "     L4 (TCP) - dcos-site2 service - port 10005"
-echo "     L7 (HTTP) - dcos-site3 service - Defaults to http://mke-l7.ddns.net:82"
-echo
-echo
-echo
+echo "     L4 (TCP)  - hello-world1 service - port 10001"
+echo "     L4 (TCP)  - dcos-site1 service   - port port 10002"
+echo "     L7 (HTTP) - hello-world2 service - Defaults to http://mke-l7.ddns.net:80"
+echo "     L7 (HTTP) - dcos-site2 service   - Defaults to http://mke-l7.ddns.net:81"
 
 #### WAIT FOR SERVICES TO BE EXPOSED BY EDGELB
 seconds=0
@@ -510,7 +529,7 @@ while [ "$OUTPUT" != 0 ]; do
       OUTPUT=0
   else
       printf "Waited $seconds seconds for L4/L7 services to be exposed. Still waiting.\n"
-      sleep 10
+      sleep 15
   fi
 done
 
@@ -518,21 +537,15 @@ done
 echo "Opening workloads..."
 echo
 echo
+open -na "/Applications/Google Chrome.app"/ http://$EDGELB_PUBLIC_AGENT_IP:10006
+echo
 open -na "/Applications/Google Chrome.app"/ http://$DKLB_PUBLIC_AGENT_IP:10001
-sleep 1
-open -na "/Applications/Google Chrome.app"/ http://$DKLB_PUBLIC_AGENT_IP:10002
-sleep 1
-open -na "/Applications/Google Chrome.app"/ http://$DKLB_PUBLIC_AGENT_IP:10003
 sleep 1
 open -na "/Applications/Google Chrome.app"/ http://mke-l7.ddns.net:80
 sleep 1
-open -na "/Applications/Google Chrome.app"/ http://mke-l7.ddns.net:81
+open -na "/Applications/Google Chrome.app"/ http://$DKLB_PUBLIC_AGENT_IP:10002
 sleep 1
-open -na "/Applications/Google Chrome.app"/ http://$DKLB_PUBLIC_AGENT_IP:10004
-sleep 1
-open -na "/Applications/Google Chrome.app"/ http://$DKLB_PUBLIC_AGENT_IP:10005/docs/latest/
-sleep 1
-open -na "/Applications/Google Chrome.app"/ http://mke-l7.ddns.net:82
+open -na "/Applications/Google Chrome.app"/ http://mke-l7.ddns.net:81/docs/latest/
 echo
 echo
 echo -e "To enable Mesos Metrics, run \x1B[1m./start_vpn.sh \x1B[0m before executing \x1B[1m./enable_mesos_metrics.sh\x1B[0m"

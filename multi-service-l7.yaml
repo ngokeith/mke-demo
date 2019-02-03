@@ -1,0 +1,121 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello-world2
+  labels:
+    app: hello-world2
+    owner: dklb
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: hello-world2
+  template:
+    metadata:
+      labels:
+        app: hello-world2
+    spec:
+      containers:
+      - name: echo-server
+        image: hashicorp/http-echo
+        args:
+        - -listen=:80
+        - -text="Hello from the hello-world2 service on Kubernetes running on Mesosphere DC/OS!"
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: hello-world2
+    owner: dklb
+  name: hello-world2
+spec:
+  ports:
+  - nodePort: 30908
+    port: 80
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: hello-world2
+  type: NodePort
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: edgelb
+    kubernetes.dcos.io/edgelb-pool-name: dklb
+    kubernetes.dcos.io/edgelb-pool-port: "80"
+  labels:
+    owner: dklb
+  name: helloworld2-ig
+spec:
+  rules:
+  - host: "mke-l7.ddns.net"
+    http:
+      paths:
+      - backend:
+          serviceName: hello-world2
+          servicePort: 80
+---
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dcos-site2
+  labels:
+    app: dcos-site2
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: dcos-site2
+  template:
+    metadata:
+      labels:
+        app: dcos-site2
+    spec:
+      containers:
+      - name: dcos-site2
+        image: mesosphere/dcos-website:cff383e4f5a51bf04e2d0177c5023e7cebcab3cc
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: dcos-site2
+    owner: dklb
+  name: dcos-site2
+spec:
+  ports:
+  - nodePort: 30910
+    port: 80
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: dcos-site2
+  type: NodePort
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: edgelb
+    kubernetes.dcos.io/edgelb-pool-name: dklb
+    kubernetes.dcos.io/edgelb-pool-port: "81"
+  labels:
+    owner: dklb
+  name: dcos-site2
+spec:
+  rules:
+  - host: "mke-l7.ddns.net"
+    http:
+      paths:
+      - backend:
+          serviceName: dcos-site2
+          servicePort: 80

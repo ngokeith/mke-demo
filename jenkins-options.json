@@ -1,7 +1,7 @@
 {
   "service": {
-    "name": "dev/jenkins",
-    "cpus": 0.2,
+    "name": "dev/dev-jenkins",
+    "cpus": 1,
     "mem": 2048,
     "user": "root",
     "marathon-name": "marathon"
