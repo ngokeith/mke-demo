@@ -18,7 +18,7 @@
       "mem": 4096,
       "disk": 10240
     },
-    "private_node_count": 3,
+    "private_node_count": 2,
     "private_node_placement": "",
     "private_reserved_resources": {
       "kube_cpus": 1,

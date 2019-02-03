@@ -20,7 +20,7 @@ In the order below, this script will:
 6. Set up Service Accounts and Install MKE Kubernetes engine
 
 7. Set up Service Accounts and Install /prod/kubernetes-prod cluster
-- HA Deployment (3x etcd / 3x control-plane), 3 private nodes, RBAC enabled, control plane CPU lowered to 0.5, private reserved resources kube cpus lowered to 1     
+- HA Deployment (3x etcd / 3x control-plane), 2 private nodes, RBAC enabled, control plane CPU lowered to 0.5, private reserved resources kube cpus lowered to 1     
 
 8. Set up Service Accounts and Install /dev/kubernetes-dev cluster
 - Non-HA deployment, 1 private node, control plane CPU lowered to 0.5, private reserved resources kube cpus lowered to 1  
@@ -69,7 +69,7 @@ sudo chmod +x /usr/local/bin/dcos
 
 #### USAGE
 
-1. Start a cluster, such as in CCM or TF. Minimum of 9 private agents (m4.xlarge) or 5 private agents (m4.2xlarge), only 1 public agent, DC/OS EE 1.12
+1. Start a cluster, such as in CCM or TF. Minimum of 9 private agents (m4.xlarge) or 4 private agents (m4.2xlarge), only 1 public agent, DC/OS EE 1.12
 
 2. Ensure that Port 6443/6444 are at minimum open to your local machine (optional 81,82,10000-10005 as well if you want to see the Kubernetes exposed services in your browser)
 

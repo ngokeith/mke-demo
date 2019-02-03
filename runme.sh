@@ -275,10 +275,7 @@ echo "**** Installing Jenkins v$JENKINS_VERSION to /dev"
 echo
 dcos package install jenkins --package-version=$JENKINS_VERSION --options=jenkins-options.json --yes
 
-#### INSTALL /PROD/GITLAB-PROD AND /DEV/GITLAB-DEV
-echo
-echo "**** Installing Gitlab /prod/gitlab-prod"
-dcos marathon app add gitlab-prod.json
+#### INSTALL /DEV/GITLAB-DEV
 
 echo
 echo "**** Deploy Gitlab /dev/gitlab-dev"
@@ -287,7 +284,7 @@ dcos marathon app add gitlab-dev.json
 #### INSTALL GITLAB EDGELB POOL
 echo
 echo "**** Deploying Gitlab Edge-LB Pool"
-dcos edgelb create gitlab-edgelb.json
+dcos edgelb create gitlab-dev-edgelb.json
 
 #### INSTALL KAFKA
 KAFKA_VERSION="2.3.0-1.1.0"
