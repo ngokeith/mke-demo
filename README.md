@@ -42,7 +42,7 @@ In the order below, this script will:
 
 17. Install dcos-monitoring and open up Grafana dashboard
 
-18. Open up L4 and L7 services in your browser
+18. Open up Gitlab, L4 and L7 services in your browser
 
 ## PREREQUISITES
 
