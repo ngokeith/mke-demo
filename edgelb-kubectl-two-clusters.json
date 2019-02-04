@@ -1,57 +1,78 @@
 {
-    "apiVersion": "V2",
-    "name": "edgelb-kubectl-two-clusters",
-    "count": 1,
-    "autoCertificate": true,
-    "haproxy": {
-        "frontends": [{
-                "bindPort": 6443,
-                "protocol": "HTTPS",
-                "certificates": [
-                    "$AUTOCERT"
-                ],
-                "linkBackend": {
-                    "defaultBackend": "kubernetes-prod"
-                }
-            },
-            {
-                "bindPort": 6444,
-                "protocol": "HTTPS",
-                "certificates": [
-                    "$AUTOCERT"
-                ],
-                "linkBackend": {
-                    "defaultBackend": "kubernetes-dev"
-                }
-            }
-        ],
-        "backends": [{
-                "name": "kubernetes-prod",
-                "protocol": "HTTPS",
-                "services": [{
-                  "mesos": {
-                    "frameworkName": "prod/kubernetes-prod",
-                    "taskNamePattern": "kube-control-plane"
-                  },
-                  "endpoint": {
-                    "portName": "apiserver"
-                  }
-                }]
-                },
-                {"name": "kubernetes-dev",
-                "protocol": "HTTPS",
-                "services": [{
-                  "mesos": {
-                    "frameworkName": "dev/kubernetes-dev",
-                    "taskNamePattern": "kube-control-plane"
-                  },
-                  "endpoint": {
-                    "portName": "apiserver"
-                  }
-                }]
-                }],
-        "stats": {
-          "bindPort": 6090
-        }
-    }
+	"apiVersion": "V2",
+	"name": "edgelb-kubectl-two-clusters",
+	"count": 1,
+	"autoCertificate": true,
+	"haproxy": {
+		"frontends": [{
+				"bindPort": 6443,
+				"protocol": "HTTPS",
+				"certificates": [
+					"$AUTOCERT"
+				],
+				"linkBackend": {
+					"defaultBackend": "kubernetes-prod"
+				}
+			},
+			{
+				"bindPort": 6444,
+				"protocol": "HTTPS",
+				"certificates": [
+					"$AUTOCERT"
+				],
+				"linkBackend": {
+					"defaultBackend": "kubernetes-dev"
+				}
+			},
+			{
+				"bindPort": 10006,
+				"protocol": "HTTP",
+				"linkBackend": {
+					"defaultBackend": "gitlab-backend"
+				}
+			}
+		],
+		"backends": [{
+				"name": "kubernetes-prod",
+				"protocol": "HTTPS",
+				"services": [{
+					"mesos": {
+						"frameworkName": "prod/kubernetes-prod",
+						"taskNamePattern": "kube-control-plane"
+					},
+					"endpoint": {
+						"portName": "apiserver"
+					}
+				}]
+			},
+			{
+				"name": "kubernetes-dev",
+				"protocol": "HTTPS",
+				"services": [{
+					"mesos": {
+						"frameworkName": "dev/kubernetes-dev",
+						"taskNamePattern": "kube-control-plane"
+					},
+					"endpoint": {
+						"portName": "apiserver"
+					}
+				}]
+			},
+			{
+				"name": "gitlab-backend",
+				"protocol": "HTTP",
+				"services": [{
+					"marathon": {
+						"serviceID": "/dev/gitlab-dev"
+					},
+					"endpoint": {
+						"portName": "http"
+					}
+				}]
+			}
+		],
+		"stats": {
+			"bindPort": 6090
+		}
+	}
 }

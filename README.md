@@ -27,7 +27,7 @@ In the order below, this script will:
 
 9. Install Jenkins in /dev/jenkins
 
-10. Install Gitlab in /prod/gitlab-prod and /dev/gitlab-dev, expose gitlab-prod and gitlab-dev on your EDGELB_PUBLIC_AGENT_IP:<10006/10007>
+10. Install Gitlab in /dev/gitlab-dev, expose gitlab-dev on your EDGELB_PUBLIC_AGENT_IP:10006
 
 11. Install Kafka - Create a topic called performancetest
 

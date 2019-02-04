@@ -67,7 +67,7 @@ echo "8. Set up Service Accounts and Install /dev/kubernetes-dev cluster"
 echo
 echo "9. Install Jenkins in /dev/jenkins"
 echo
-echo "10. Install Gitlab in /prod/gitlab-prod and /dev/gitlab-dev, expose gitlab-prod and gitlab-dev on your EDGELB_PUBLIC_AGENT_IP:<10006/10007>"
+echo "10. Install Gitlab in /dev/gitlab-dev, expose gitlab-dev on your EDGELB_PUBLIC_AGENT_IP:10006"
 echo
 echo "11. Install Kafka - Create a topic called performancetest"
 echo
@@ -453,6 +453,10 @@ rm -f public-key.pem 2> /dev/null
 rm -f edge-lb-private-key.pem 2> /dev/null
 rm -f edge-lb-public-key.pem 2> /dev/null
 
+#### INSTALL DCOS-MONITORING
+./install_monitoring.sh
+
+
 # This script is ran via sudo since /etc/hosts is modified. But it also sets up kubectl and the dcos CLI
 # which means some of those files now belong to root
 
@@ -461,9 +465,6 @@ echo "**** Running chown -RH $SUDO_USER ~/.kube ~/.dcos since this script is ran
 echo
 echo "If you ever break out of this script, you must run this command:"
 chown -RH $SUDO_USER ~/.kube ~/.dcos
-
-#### INSTALL DCOS-MONITORING
-./install_monitoring.sh
 
 #### Opening dklb-pool-1 workloads
 echo
@@ -505,8 +506,9 @@ echo "$EDGELB_PUBLIC_AGENT_IP dcos-gitlabdemo.ddns.net" >> /etc/hosts
 # to bypass DNS & hosts file: curl -H "Host: www.apache.test" $EDGELB_PUBLIC_AGENT_IP
 
 
-
-echo "     Opening your browser to $DKLB_PUBLIC_AGENT_IP:80,81"
+echo
+echo "     Opening your browser to $DKLB_PUBLIC_AGENT_IP:80,81,10001,10002"
+echo
 echo "     NOTE: If having connectivity issues, make sure that Public Agent LB is open for non 80/443 ports"
 echo "     By default, CCM should have open security group rules for the ELB while the DCOS-terraform project only allows 80/443"
 echo
@@ -516,7 +518,7 @@ echo "     L4 (TCP)  - hello-world1 service - port 10001"
 echo "     L4 (TCP)  - dcos-site1 service   - port port 10002"
 echo "     L7 (HTTP) - hello-world2 service - Defaults to http://mke-l7.ddns.net:80"
 echo "     L7 (HTTP) - dcos-site2 service   - Defaults to http://mke-l7.ddns.net:81"
-
+echo
 #### WAIT FOR SERVICES TO BE EXPOSED BY EDGELB
 seconds=0
 OUTPUT=1
@@ -545,8 +547,9 @@ sleep 1
 open -na "/Applications/Google Chrome.app"/ http://mke-l7.ddns.net:81/docs/latest/
 echo
 echo
-echo -e "To enable Mesos Metrics, run \x1B[1m./start_vpn.sh \x1B[0m before executing \x1B[1m./enable_mesos_metrics.sh\x1B[0m"
+echo -e "To enable Mesos Metrics, if on CoreOS run \x1B[1m./start_vpn_coreos.sh \x1B[0m before executing \x1B[1m./enable_mesos_metrics_coreos.sh\x1B[0m in a seperate tab"
 echo
+echo -e "To enable Mesos Metrics, if on CentOS run \x1B[1m./start_vpn_centos.sh \x1B[0m before executing \x1B[1m./enable_mesos_metrics_centos.sh\x1B[0m in a seperate tab"
 echo
 echo "If you want to view the Kafka dashboard in Grafana, import dashboard 9018"
 echo
