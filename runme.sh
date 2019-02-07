@@ -2,7 +2,7 @@
 
 ######## REQUIRED VARIABLES ########
 
-SCRIPT_VERSION="FEB-2-2019"
+SCRIPT_VERSION="FEB-7-2019"
 JENKINS_VERSION="3.5.2-2.107.2"
 KAFKA_VERSION="2.3.0-1.1.0"
 K8S_MKE_VERSION="stub-universe"
@@ -10,10 +10,10 @@ K8S_PROD_VERSION="stub-universe"
 K8S_DEV_VERSION="stub-universe"
 DCOS_USER="bootstrapuser"
 DCOS_PASSWORD="deleteme"
-#KEEP FOR OLD STABLE - EDGE_LB_VERSION="1.2.3-42-g6643742"
+EDGE_LB_VERSION="1.3.0"
 # BELOW IS EDGELB VARS FOR BETA TESTING DKLB
-EDGE_LB_LINK="https://edge-lb-infinity-artifacts.s3.amazonaws.com/autodelete7d/v1.2.3-111-gc28ece3/edgelb/stub-universe-edgelb.json"
-EDGE_LB_POOL_LINK="https://edge-lb-infinity-artifacts.s3.amazonaws.com/autodelete7d/v1.2.3-111-gc28ece3/edgelb-pool/stub-universe-edgelb-pool.json"
+#EDGE_LB_LINK="https://edge-lb-infinity-artifacts.s3.amazonaws.com/autodelete7d/v1.2.3-111-gc28ece3/edgelb/stub-universe-edgelb.json"
+#EDGE_LB_POOL_LINK="https://edge-lb-infinity-artifacts.s3.amazonaws.com/autodelete7d/v1.2.3-111-gc28ece3/edgelb-pool/stub-universe-edgelb-pool.json"
 # BELOW IS MKE VARS FOR BETA TESTING DKLB
 KUBERNETES_STUB_LINK="https://universe-converter.mesosphere.com/transform?url=https://dcos-kubernetes-artifacts.s3.amazonaws.com/nightlies/kubernetes/master/stub-universe-kubernetes.json"
 KUBERNETES_CLUSTER_STUB_LINK="https://universe-converter.mesosphere.com/transform?url=https://dcos-kubernetes-artifacts.s3.amazonaws.com/nightlies/kubernetes-cluster/master/stub-universe-kubernetes-cluster.json"
@@ -164,14 +164,14 @@ echo
 echo "**** Installing Edge-LB v$EDGE_LB_VERSION"
 echo
 
-#### New Links for Edge-LB version with dklb support
-dcos package repo add --index=0 edgelb-aws $EDGE_LB_LINK
+#### New Links for Edge-LB stubs
+#dcos package repo add --index=0 edgelb-aws $EDGE_LB_LINK
 
-dcos package repo add --index=0 edgelb-pool-aws $EDGE_LB_POOL_LINK
+#dcos package repo add --index=0 edgelb-pool-aws $EDGE_LB_POOL_LINK
 
 #### Old - for edgelb stable syntax:
-#dcos package repo add --index=0 edge-lb https://downloads.mesosphere.com/edgelb/v$EDGE_LB_VERSION/assets/stub-universe-edgelb.json
-#dcos package repo add --index=0 edge-lbpool https://downloads.mesosphere.com/edgelb-pool/v$EDGE_LB_VERSION/assets/stub-universe-edgelb-pool.json
+dcos package repo add --index=0 edge-lb https://downloads.mesosphere.com/edgelb/v$EDGE_LB_VERSION/assets/stub-universe-edgelb.json
+dcos package repo add --index=0 edge-lbpool https://downloads.mesosphere.com/edgelb-pool/v$EDGE_LB_VERSION/assets/stub-universe-edgelb-pool.json
 
 rm -f /tmp/edge-lb-private-key.pem 2> /dev/null
 rm -f /tmp/edge-lb-public-key.pem 2> /dev/null
@@ -280,14 +280,6 @@ dcos package install jenkins --package-version=$JENKINS_VERSION --options=jenkin
 echo
 echo "**** Deploy Gitlab /dev/gitlab-dev"
 dcos marathon app add gitlab-dev.json
-
-#### INSTALL GITLAB EDGELB POOL
-echo
-echo "**** Deploying Gitlab Edge-LB Pool"
-dcos edgelb create gitlab-dev-edgelb.json
-
-#### INSTALL KAFKA
-KAFKA_VERSION="2.3.0-1.1.0"
 
 #### INSTALL KAFKA
 echo
