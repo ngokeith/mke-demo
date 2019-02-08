@@ -1,0 +1,44 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello-world3
+  labels:
+    app: hello-world3
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: hello-world3
+  template:
+    metadata:
+      labels:
+        app: hello-world3
+    spec:
+      containers:
+      - name: echo-server
+        image: hashicorp/http-echo
+        args:
+        - -listen=:8181
+        - -text="Hello from the hello-world3 service on Kubernetes running on Mesosphere DC/OS!"
+        ports:
+        - containerPort: 8181
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kubernetes.dcos.io/edgelb-pool-name: "dklb-4"
+    kubernetes.dcos.io/edgelb-pool-portmap.8181: "10004"
+  labels:
+    app: hello-world3
+  name: hello-world3
+spec:
+  type: LoadBalancer
+  selector:
+    app: hello-world3
+  ports:
+  - protocol: TCP
+    port: 8181
+    targetPort: 8181
+---

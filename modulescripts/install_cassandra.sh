@@ -1,4 +1,6 @@
-dcos package install cassandra --package-version=2.3.0-3.0.16 --yes
+#!/bin/bash
+
+dcos package install cassandra --package-version=$1 --yes
 
 echo To Upgrade, use the command:
 echo

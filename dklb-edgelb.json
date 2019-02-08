@@ -1,0 +1,78 @@
+{
+  "apiVersion": "V2",
+  "constraints": "hostname:UNIQUE",
+  "count": 1,
+  "cpus": 0.1,
+  "cpusAdminOverhead": 0.1,
+  "disk": 256,
+  "haproxy": {
+    "backends": [
+      {
+        "balance": "leastconn",
+        "miscStrs": null,
+        "name": "dev.kubernetes-dev:default:hello-world:8080",
+        "protocol": "TCP",
+        "rewriteHttp": {
+          "request": {
+            "forwardfor": true,
+            "rewritePath": true,
+            "setHostHeader": true,
+            "xForwardedPort": true,
+            "xForwardedProtoHttpsIfTls": true
+          },
+          "response": {
+            "rewriteLocation": true
+          }
+        },
+        "services": [
+          {
+            "endpoint": {
+              "check": {
+                "enabled": true
+              },
+              "port": 32304,
+              "type": "CONTAINER_IP"
+            },
+            "marathon": {},
+            "mesos": {
+              "frameworkName": "dev/kubernetes-dev",
+              "taskNamePattern": "^kube-node-.*$"
+            }
+          }
+        ]
+      }
+    ],
+    "frontends": [
+      {
+        "bindAddress": "0.0.0.0",
+        "bindPort": 10005,
+        "certificates": null,
+        "linkBackend": {
+          "defaultBackend": "dev.kubernetes-dev:default:hello-world:8080",
+          "map": null
+        },
+        "miscStrs": null,
+        "name": "dev.kubernetes-dev:default:hello-world:8080",
+        "protocol": "TCP"
+      }
+    ],
+    "stats": {
+      "bindAddress": "0.0.0.0",
+      "bindPort": 9093
+    }
+  },
+  "mem": 128,
+  "memAdminOverhead": 32,
+  "name": "dklb2",
+  "namespace": "dcos-edgelb/pools",
+  "packageName": "edgelb-pool",
+  "packageVersion": "v1.3.0",
+  "poolHealthcheckGracePeriod": 180,
+  "poolHealthcheckInterval": 12,
+  "poolHealthcheckMaxFail": 5,
+  "poolHealthcheckTimeout": 60,
+  "ports": null,
+  "role": "slave_public",
+  "secrets": null,
+  "virtualNetworks": null
+}
