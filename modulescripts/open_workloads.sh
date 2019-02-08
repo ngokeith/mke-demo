@@ -16,7 +16,7 @@ export EDGELB_PUBLIC_AGENT_IP=$(dcos task exec -it kubectl-two-clusters__edgelb-
 echo Public IP of Edge-LB node is: $EDGELB_PUBLIC_AGENT_IP
 # NOTE, if that approach to finding the public IP doesn't work, consider https://github.com/ably77/dcos-se/tree/master/Kubernetes/mke/public_ip
 
-#### WAIT FOR SERVICES TO BE EXPOSED BY EDGELB
+#### WAIT FOR MKE-L7.DDNS.NET HELLO-WORLD SERVICE TO BE EXPOSED BY EDGELB
 seconds=0
 OUTPUT=1
 while [ "$OUTPUT" != 0 ]; do
@@ -25,9 +25,23 @@ while [ "$OUTPUT" != 0 ]; do
       OUTPUT=0
   else
       printf "Waited $seconds seconds for L4/L7 services to be exposed. Still waiting.\n"
-      sleep 15
+      sleep 5
   fi
 done
+
+#### WAIT FOR MKE-L7.DDNS.NET DCOS-SITE SERVICE TO BE EXPOSED BY EDGELB
+seconds=0
+OUTPUT=1
+while [ "$OUTPUT" != 0 ]; do
+  seconds=$((seconds+10))
+  if curl -s -H "Host: mke-l7.ddns.net" $DKLB_PUBLIC_AGENT_IP:81 | grep -q "The Definitive Platform for Modern Apps"; then
+      OUTPUT=0
+  else
+      printf "Waited $seconds seconds for L4/L7 services to be exposed. Still waiting.\n"
+      sleep 5
+  fi
+done
+
 
 #### OPEN WORKLOADS
 echo "Opening workloads..."
