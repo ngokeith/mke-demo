@@ -30,7 +30,7 @@ metadata:
   annotations:
     kubernetes.dcos.io/edgelb-pool-name: "dklb"
     kubernetes.dcos.io/edgelb-pool-portmap.80: "10001"
-    kubernetes.dcos.io/edgelb-pool-cpus: "500m"
+    kubernetes.dcos.io/edgelb-pool-cpus: "200m"
     kubernetes.dcos.io/edgelb-pool-mem: "1024Mi"
   labels:
     app: hello-world1
@@ -72,7 +72,7 @@ metadata:
   annotations:
     kubernetes.dcos.io/edgelb-pool-name: "dklb"
     kubernetes.dcos.io/edgelb-pool-portmap.80: "10002"
-    kubernetes.dcos.io/edgelb-pool-cpus: "500m"
+    kubernetes.dcos.io/edgelb-pool-cpus: "200m"
     kubernetes.dcos.io/edgelb-pool-mem: "1024Mi"
   labels:
     app: dcos-site1
@@ -107,7 +107,7 @@ metadata:
   annotations:
     kubernetes.dcos.io/edgelb-pool-name: "dklb"
     kubernetes.dcos.io/edgelb-pool-portmap.6379: "16379"
-    kubernetes.dcos.io/edgelb-pool-cpus: "500m"
+    kubernetes.dcos.io/edgelb-pool-cpus: "200m"
     kubernetes.dcos.io/edgelb-pool-mem: "1024Mi"
   labels:
     app: redis

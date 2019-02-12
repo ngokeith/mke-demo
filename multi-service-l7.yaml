@@ -49,8 +49,8 @@ metadata:
     kubernetes.io/ingress.class: edgelb
     kubernetes.dcos.io/edgelb-pool-name: dklb
     kubernetes.dcos.io/edgelb-pool-port: "80"
-    kubernetes.dcos.io/edgelb-pool-cpus: "1500m"
-    kubernetes.dcos.io/edgelb-pool-mem: "8192Mi"
+    kubernetes.dcos.io/edgelb-pool-cpus: "200m"
+    kubernetes.dcos.io/edgelb-pool-mem: "1024Mi"
   labels:
     owner: dklb
   name: helloworld2-ig
@@ -110,8 +110,8 @@ metadata:
     kubernetes.io/ingress.class: edgelb
     kubernetes.dcos.io/edgelb-pool-name: dklb
     kubernetes.dcos.io/edgelb-pool-port: "81"
-    kubernetes.dcos.io/edgelb-pool-cpus: "1500m"
-    kubernetes.dcos.io/edgelb-pool-mem: "8192Mi"
+    kubernetes.dcos.io/edgelb-pool-cpus: "200m"
+    kubernetes.dcos.io/edgelb-pool-mem: "1024Mi"
   labels:
     owner: dklb
   name: dcos-site2
