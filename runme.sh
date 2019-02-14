@@ -138,10 +138,10 @@ dcos kafka topic create performancetest --partitions 10 --replication 3 --name=k
 ./modulescripts/connect_k8sdev.sh
 
 #### INSTALL DKLB ON /DEV/KUBERNETES-DEV
-./modulescripts/install_dklb.sh
+#./modulescripts/install_dklb.sh
 
 #### DEPLOY SERVICES ON /DEV/KUBERNETES-DEV
-./modulescripts/install_k8s_devservices.sh
+#./modulescripts/install_k8s_devservices.sh
 
 #### SHOW KUBECTL CONFIG
 
