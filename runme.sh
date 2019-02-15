@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ######## REQUIRED VARIABLES ########
-SCRIPT_VERSION="FEB-7-2019"
+SCRIPT_VERSION="FEB-15-2019"
 JENKINS_VERSION="3.5.2-2.107.2"
 KAFKA_VERSION="2.3.0-1.1.0"
 K8S_MKE_VERSION="stub-universe"
@@ -20,6 +20,7 @@ VHOST="mke-l7.ddns.net"
 ######## OPTIONAL VARIABLES ########
 LICENSE_FILE="dcos-1-12-license-50-nodes.txt"
 SSH_KEY_FILE="/Users/josh/ccm-priv.key"
+USER="alexly"
 
 #### SETUP MASTER URL VARIABLE
 
@@ -154,11 +155,11 @@ echo "**** Changing kubectl context back to prod"
 echo
 kubectl config use-context prod
 
-#### SETUP USER PROD-USER & GROUP PROD & SECRET /PROD/SECRET
-#./modulescripts/RBAC_secrets.sh
+#### SETUP USER PROD-USER & GROUP PROD & SECRET /PROD/SECRET AND USER DEV-USER & GROUP DEV & SECRET /DEV/SECRET
+./modulescripts/setup_RBAC.sh
 
-#### CLEANUP, FIX DCOS CLI AND KUBECTL FILE OWNERSHIP BECAUSE OF SUDO
 
+#### REMOVE KEYS
 rm -f private-key.pem 2> /dev/null
 rm -f public-key.pem 2> /dev/null
 rm -f edge-lb-private-key.pem 2> /dev/null
@@ -185,5 +186,5 @@ sudo ./modulescripts/append-etchosts.sh
 #### OPEN WORKLOADS
 ./modulescripts/open_workloads.sh
 
-#### CHANGE OWNERSHIP BACK TO USER AGAIN FOR SAFE MEASURE
+#### CLEANUP, FIX DCOS CLI AND KUBECTL FILE OWNERSHIP BECAUSE OF SUDO
 sudo chown -RH $USER ~/.kube ~/.dcos
