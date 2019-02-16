@@ -1,19 +1,27 @@
 #!/bin/bash
 
-#### Opening dklb-pool-1 workloads
+#### GET PUBLIC IP OF PROD POOL
 echo
-echo "**** Setting env var DKLB_PUBLIC_AGENT_IP"
+echo "**** Setting env var PROD_POOL_PUBLIC_IP"
 echo
-export DKLB_PUBLIC_AGENT_IP=$(dcos task exec -it dcos-edgelb.pools.dklb curl ifconfig.co | tr -d '\r' | tr -d '\n')
-echo Public IP of DKLB Edge-LB node is: $DKLB_PUBLIC_AGENT_IP
+export PROD_POOL_PUBLIC_IP=$(dcos task exec -it dcos-edgelb.pools.prod-lb-pool curl ifconfig.co | tr -d '\r' | tr -d '\n')
+echo Public IP of prod-lb-pool is: $PROD_POOL_PUBLIC_IP
+# NOTE, if that approach to finding the public IP doesn't work, consider https://github.com/ably77/dcos-se/tree/master/Kubernetes/mke/public_ip
+
+#### GET PUBLIC IP OF DEV POOL
+echo
+echo "**** Setting env var DEV_POOL_PUBLIC_IP"
+echo
+export DEV_POOL_PUBLIC_IP=$(dcos task exec -it dcos-edgelb.pools.dev-lb-pool curl ifconfig.co | tr -d '\r' | tr -d '\n')
+echo Public IP of dev-lb-pool is: $DEV_POOL_PUBLIC_IP
 # NOTE, if that approach to finding the public IP doesn't work, consider https://github.com/ably77/dcos-se/tree/master/Kubernetes/mke/public_ip
 
 #### GET PUBLIC IP OF GITLAB POOL
 echo
 echo "**** Setting env var EDGELB_PUBLIC_AGENT_IP"
 echo
-export EDGELB_PUBLIC_AGENT_IP=$(dcos task exec -it kubectl-two-clusters__edgelb-pool- curl ifconfig.co | tr -d '\r' | tr -d '\n')
-echo Public IP of Edge-LB node is: $EDGELB_PUBLIC_AGENT_IP
+export GITLAB_POOL_PUBLIC_IP=$(dcos task exec -it kubectl-two-clusters__edgelb-pool- curl ifconfig.co | tr -d '\r' | tr -d '\n')
+echo Public IP of Edge-LB node is: $GITLAB_POOL_PUBLIC_IP
 # NOTE, if that approach to finding the public IP doesn't work, consider https://github.com/ably77/dcos-se/tree/master/Kubernetes/mke/public_ip
 
 #### SETUP HOSTS FILE FOR mke-l7.ddns.net
@@ -42,7 +50,8 @@ else
     echo
 fi
 
-echo "**** Adding entries to /etc/hosts for mke-l7.ddns.net for $DKLB_PUBLIC_AGENT_IP"
-echo "$DKLB_PUBLIC_AGENT_IP mke-l7.ddns.net" >> /etc/hosts
-echo "$EDGELB_PUBLIC_AGENT_IP dcos-gitlabdemo.ddns.net" >> /etc/hosts
+echo "**** Adding entries to /etc/hosts for mke-l7.ddns.net for $PROD_POOL_PUBLIC_IP"
+echo "$PROD_POOL_PUBLIC_IP mke-l7.ddns.net" >> /etc/hosts
+echo "$DEV_POOL_PUBLIC_IP mke-l7.ddns.net" >> /etc/hosts
+echo "$GITLAB_POOL_PUBLIC_IP dcos-gitlabdemo.ddns.net" >> /etc/hosts
 # to bypass DNS & hosts file: curl -H "Host: www.apache.test" $EDGELB_PUBLIC_AGENT_IP

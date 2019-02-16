@@ -11,12 +11,18 @@ DCOS_USER="bootstrapuser"
 DCOS_PASSWORD="deleteme"
 EDGE_LB_VERSION="1.3.0"
 DCOS_MONITORING_VERSION="v0.4.2-beta"
+# BELOW IS MKE VARS FOR BETA TESTING DKLB
+#KUBERNETES_STUB_LINK="https://universe-converter.mesosphere.com/transform?url=https://dcos-kubernetes-artifacts.s3.amazonaws.com/nightlies/kubernetes/master/stub-universe-kubernetes.json"
+#KUBERNETES_CLUSTER_STUB_LINK="https://universe-converter.mesosphere.com/transform?url=https://dcos-kubernetes-artifacts.s3.amazonaws.com/nightlies/kubernetes-cluster/master/stub-universe-kubernetes-cluster.json"
+#K8S_MKE_VERSION="stub-universe"
+#K8S_PROD_VERSION="stub-universe"
+#K8S_DEV_VERSION="stub-universe"
 # VHOST Routing Hostname for L7 Loadbalancing
 VHOST="mke-l7.ddns.net"
 
 ######## OPTIONAL VARIABLES ########
-LICENSE_FILE="<ALTERNATE/PATH/TO/LICENSE/FILE>"
-SSH_KEY_FILE="<PATH/TO/SSH/KEY/FILE>"
+LICENSE_FILE="dcos-1-12-license-50-nodes.txt"
+SSH_KEY_FILE="/Users/josh/ccm-priv.key"
 USER="alexly"
 
 #### SETUP MASTER URL VARIABLE
@@ -44,15 +50,44 @@ MASTER_URL=$(echo $1 | sed 's/http/https/')
 
 #### SETUP CLI
 
-./modulescripts/setup_cli.sh $MASTER_URL $DCOS_USER $DCOS_PASSWORD
+echo
+echo "**** Running command: dcos cluster setup"
+#echo
+dcos cluster setup $MASTER_URL --insecure --username=$DCOS_USER --password=$DCOS_PASSWORD
+echo
+echo "**** Installing enterprise CLI"
+echo
+dcos package install dcos-enterprise-cli --yes
+echo
+echo "**** Setting core.ssl_verify to false"
+echo
+dcos config set core.ssl_verify false
 
 #### UPDATE DC/OS LICENSE TO > CCM'S DEFAULT LICENSE
 
-./modulescripts/update_license.sh $LICENSE_FILE
+if [[ -e $LICENSE_FILE ]]; then
+    echo
+    echo "**** Updating DC/OS license using $LICENSE_FILE"
+    echo
+    dcos license renew $LICENSE_FILE
+else
+    echo
+    echo "**** License file $LICENSE_FILE not found, license will not be updated"
+    echo
+fi
 
 #### ADDING SSH KEY, EVEN THOUGH THIS SCRIPT DOESN'T USE IT
 
-./modulescripts/setup_ssh.sh $SSH_KEY_FILE
+if [[ -e $SSH_KEY_FILE ]]; then
+    echo
+    echo "**** Adding SSH key $SSH_KEY_FILE to this workstation's SSH keychain"
+    echo
+    ssh-add $SSH_KEY_FILE
+else
+    echo
+    echo "**** SSH key $SSH_KEY_FILE not found, no key will be added to this workstation's SSH keychain"
+    echo
+fi
 
 #### CHANGE OWNERSHIP BACK TO USER
 sudo chown -RH $USER ~/.kube ~/.dcos
@@ -98,7 +133,7 @@ dcos kafka topic create performancetest --partitions 10 --replication 3 --name=k
 ./modulescripts/connect_k8sprod.sh
 
 #### INSTALL DKLB ON /PROD/KUBERNETES-PROD
-./modulescripts/install_dklbprod.sh
+./modulescripts/install_dklb.sh
 
 #### DEPLOY SERVICES ON /PROD/KUBERNETES-PROD
 ./modulescripts/install_k8s_services.sh
@@ -107,10 +142,10 @@ dcos kafka topic create performancetest --partitions 10 --replication 3 --name=k
 ./modulescripts/connect_k8sdev.sh
 
 #### INSTALL DKLB ON /DEV/KUBERNETES-DEV
-./modulescripts/install_dklbdev.sh
+#./modulescripts/install_dklb.sh
 
 #### DEPLOY SERVICES ON /DEV/KUBERNETES-DEV
-./modulescripts/install_k8s_devservices.sh
+#./modulescripts/install_k8s_devservices.sh
 
 #### SHOW KUBECTL CONFIG
 
@@ -136,6 +171,17 @@ rm -f edge-lb-public-key.pem 2> /dev/null
 #### INSTALL DCOS-MONITORING
 ./modulescripts/install_monitoring.sh $DCOS_MONITORING_VERSION
 
+
+# This script is ran via sudo since /etc/hosts is modified. But it also sets up kubectl and the dcos CLI
+# which means some of those files now belong to root
+
+#echo
+#echo "**** Running chown -RH $USER ~/.kube ~/.dcos since this script is ran via sudo"
+#echo
+#echo "If you ever break out of this script, you must run this command:"
+#chown -RH $USER ~/.kube ~/.dcos
+#echo
+#echo
 #### SETUP HOSTS FILE FOR mke-l7.ddns.net
 echo may need your password to modify /etc/hosts
 sudo ./modulescripts/append-etchosts.sh
@@ -143,13 +189,5 @@ sudo ./modulescripts/append-etchosts.sh
 #### OPEN WORKLOADS
 ./modulescripts/open_workloads.sh
 
-# This script is ran via sudo since /etc/hosts is modified. But it also sets up kubectl and the dcos CLI
-# which means some of those files now belong to root
-
-echo
-echo "**** Running chown -RH $USER ~/.kube ~/.dcos since this script is ran via sudo"
-echo
-echo "If you ever break out of this script, you must run this command:"
+#### CLEANUP, FIX DCOS CLI AND KUBECTL FILE OWNERSHIP BECAUSE OF SUDO
 sudo chown -RH $USER ~/.kube ~/.dcos
-echo
-echo

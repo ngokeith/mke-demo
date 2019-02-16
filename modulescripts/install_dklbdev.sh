@@ -2,4 +2,4 @@
 
 #### INSTALL DKLB
 kubectl create -f dklb-prereqs.yaml
-kubectl create -f dklb-deployment.yaml
+kubectl create -f dklb-deployment-dev.yaml

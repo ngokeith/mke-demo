@@ -47,7 +47,7 @@ kind: Ingress
 metadata:
   annotations:
     kubernetes.io/ingress.class: edgelb
-    kubernetes.dcos.io/edgelb-pool-name: "dklb-dev"
+    kubernetes.dcos.io/edgelb-pool-name: "dev-lb-pool"
     kubernetes.dcos.io/edgelb-pool-port: "82"
   labels:
     owner: dklb
