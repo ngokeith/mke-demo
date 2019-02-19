@@ -57,6 +57,14 @@ MASTER_URL=$(echo $1 | sed 's/http/https/')
 #### CHANGE OWNERSHIP BACK TO USER
 sudo chown -RH $USER ~/.kube ~/.dcos
 
+#### CREATE AND ATTACH AWS EBS VOLUMES
+#./modulescripts/create_and_attach_volumes.sh
+
+#### INSTALL PORTWORX
+#./modulescripts/setup_portworx_options.sh
+
+#./modulescripts/install_portworx.sh
+
 #### INSTALL EDGELB
 ./modulescripts/install_edgelb.sh $EDGE_LB_VERSION
 
