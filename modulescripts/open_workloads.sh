@@ -34,10 +34,10 @@ seconds=0
 OUTPUT=1
 while [ "$OUTPUT" != 0 ]; do
   seconds=$((seconds+10))
-  if curl -s -H "Host: mke-l7.ddns.net" $PROD_POOL_PUBLIC_IP:81 | grep -q "The Definitive Platform for Modern Apps"; then
+  if curl -s http://$PROD_POOL_PUBLIC_IP:10001 | grep -q "Hello"; then
       OUTPUT=0
   else
-      printf "Waited $seconds seconds for L4/L7 services to be exposed. Still waiting.\n"
+      printf "Waited $seconds seconds for L4/L7 services to be exposed. Still waiting. (Make sure ports 10001-10006 are open \n"
       sleep 5
   fi
 done
