@@ -1,16 +1,14 @@
 #!/bin/bash
+kubectx prod
 
-kubectl delete -f multi-service-l7-dev.yaml
-kubectl delete -f multi-service-l4-dev.yaml
+kubectl delete -f multi-service-l4.yaml
 kubectl delete -f kafka-producer.yaml
 kubectl delete -f dklb-deployment-dev.yaml
 kubectl delete -f dklb-prereqs.yaml
 
 kubectx dev
 
-kubectl delete -f multi-service-l7-prod.yaml
-kubectl delete -f multi-service-l4-prod.yaml
-kubectl delete -f kafka-producer.yaml
+kubectl delete -f multi-service-l4-dev.yaml
 kubectl delete -f dklb-deployment-prod.yaml
 kubectl delete -f dklb-prereqs.yaml
 

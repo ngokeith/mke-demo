@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ######## REQUIRED VARIABLES ########
-SCRIPT_VERSION="FEB-15-2019"
+SCRIPT_VERSION="FEB-20-2019"
 JENKINS_VERSION="3.5.2-2.107.2"
 KAFKA_VERSION="2.3.0-1.1.0"
 K8S_MKE_VERSION="2.2.0-1.13.3"
@@ -11,10 +11,12 @@ DCOS_USER="bootstrapuser"
 DCOS_PASSWORD="deleteme"
 EDGE_LB_VERSION="1.3.0"
 DCOS_MONITORING_VERSION="v0.4.2-beta"
+PORTWORX_VERSION="1.3.3-1.6.1.1"
 # VHOST Routing Hostname for L7 Loadbalancing
 VHOST="mke-l7.ddns.net"
 
 ######## OPTIONAL VARIABLES ########
+PORTWORX_ENABLED="false"
 LICENSE_FILE="<ALTERNATE/PATH/TO/LICENSE/FILE>"
 SSH_KEY_FILE="<PATH/TO/SSH/KEY/FILE>"
 USER="alexly"
@@ -57,13 +59,16 @@ MASTER_URL=$(echo $1 | sed 's/http/https/')
 #### CHANGE OWNERSHIP BACK TO USER
 sudo chown -RH $USER ~/.kube ~/.dcos
 
-#### CREATE AND ATTACH AWS EBS VOLUMES
-#./modulescripts/create_and_attach_volumes.sh
-
 #### INSTALL PORTWORX
-#./modulescripts/setup_portworx_options.sh
+if [ "$PORTWORX_ENABLED" = "true" ]; then
+  #### CREATE AND ATTACH AWS EBS VOLUMES
+  #./modulescripts/create_and_attach_volumes.sh
 
-#./modulescripts/install_portworx.sh
+  #### INSTALL PORTWORX
+  ./modulescripts/setup_portworx_options.sh
+
+  ./modulescripts/install_portworx.sh $PORTWORX_VERSION
+fi
 
 #### INSTALL EDGELB
 ./modulescripts/install_edgelb.sh $EDGE_LB_VERSION
@@ -95,6 +100,8 @@ sudo chown -RH $USER ~/.kube ~/.dcos
 
 #### INSTALL KAFKA
 ./modulescripts/install_kafka.sh $KAFKA_VERSION
+
+./modulescripts/check-status-with-name.sh kafka kafka
 
 #### CREATE KAFKA TOPIC
 dcos kafka topic create performancetest --partitions 10 --replication 3 --name=kafka
@@ -144,6 +151,8 @@ rm -f edge-lb-public-key.pem 2> /dev/null
 #### INSTALL DCOS-MONITORING
 ./modulescripts/install_monitoring.sh $DCOS_MONITORING_VERSION
 
+./modulescripts/check-status-with-name.sh beta-dcos-monitoring dcos-monitoring
+
 #### SETUP HOSTS FILE FOR mke-l7.ddns.net
 echo may need your password to modify /etc/hosts
 sudo ./modulescripts/append-etchosts.sh
@@ -155,9 +164,9 @@ sudo ./modulescripts/append-etchosts.sh
 # which means some of those files now belong to root
 
 echo
-echo "**** Running chown -RH $USER ~/.kube ~/.dcos since this script is ran via sudo"
+echo "Running: chown -RH $USER ~/.kube ~/.dcos since this script is ran via sudo"
 echo
-echo "If you ever break out of this script, you must run this command:"
+echo "If you ever break out of this script, you must run this command"
 sudo chown -RH $USER ~/.kube ~/.dcos
 echo
 echo

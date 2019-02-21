@@ -2,25 +2,25 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: hello-world3
+  name: hello-world-l4
   labels:
-    app: hello-world3
+    app: hello-world-l4
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: hello-world3
+      app: hello-world-l4
   template:
     metadata:
       labels:
-        app: hello-world3
+        app: hello-world-l4
     spec:
       containers:
       - name: echo-server
         image: hashicorp/http-echo
         args:
         - -listen=:80
-        - -text="Hello from the hello-world3 service on Kubernetes running on Mesosphere DC/OS!"
+        - -text="Hello from the hello-world-l4 service on Kubernetes running on Mesosphere DC/OS!"
         ports:
         - containerPort: 80
 ---
@@ -29,14 +29,14 @@ kind: Service
 metadata:
   annotations:
     kubernetes.dcos.io/edgelb-pool-name: "dev-lb-pool"
-    kubernetes.dcos.io/edgelb-pool-portmap.80: "10003"
+    kubernetes.dcos.io/edgelb-pool-portmap.80: "10001"
   labels:
-    app: hello-world3
-  name: hello-world3
+    app: hello-world-l4
+  name: hello-world-l4
 spec:
   type: LoadBalancer
   selector:
-    app: hello-world3
+    app: hello-world-l4
   ports:
   - protocol: TCP
     port: 80

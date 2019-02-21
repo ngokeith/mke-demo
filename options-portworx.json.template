@@ -39,7 +39,7 @@
   "lighthouse": {
     "enabled": true,
     "placement_constraint": "",
-    "public_agent": false,
+    "public_agent": true,
     "cpus": 0.3,
     "mem": 1024,
     "image": "portworx/px-lighthouse:2.0.1",

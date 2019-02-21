@@ -11,7 +11,7 @@ echo Public IP of Edge-LB node is: $DEV_K8S_EDGELB
 #### SETUP KUBECTL FOR /PROD/KUBERNETES-PROD
 
 echo
-echo "**** Running dcos kubernetes cluster kubeconfig for /prod/kubernetes-prod, as context 'prod'"
+echo "**** Running dcos kubernetes cluster kubeconfig for /dev/kubernetes-dev, as context 'dev'"
 echo
 dcos kubernetes cluster kubeconfig --insecure-skip-tls-verify --context-name=dev --cluster-name=dev/kubernetes-dev --apiserver-url=https://$DEV_K8S_EDGELB:6444
 

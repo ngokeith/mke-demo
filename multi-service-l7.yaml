@@ -2,26 +2,26 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: hello-world2
+  name: hello-world-l7
   labels:
-    app: hello-world2
+    app: hello-world-l7
     owner: dklb
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: hello-world2
+      app: hello-world-l7
   template:
     metadata:
       labels:
-        app: hello-world2
+        app: hello-world-l7
     spec:
       containers:
       - name: echo-server
         image: hashicorp/http-echo
         args:
         - -listen=:80
-        - -text="Hello from the hello-world2 service on Kubernetes running on Mesosphere DC/OS!"
+        - -text="Hello from the hello-world-l7 service on Kubernetes running on Mesosphere DC/OS!"
         ports:
         - containerPort: 80
 ---
@@ -29,9 +29,9 @@ apiVersion: v1
 kind: Service
 metadata:
   labels:
-    app: hello-world2
+    app: hello-world-l7
     owner: dklb
-  name: hello-world2
+  name: hello-world-l7
 spec:
   ports:
   - nodePort: 30908
@@ -39,7 +39,7 @@ spec:
     protocol: TCP
     targetPort: 80
   selector:
-    app: hello-world2
+    app: hello-world-l7
   type: NodePort
 ---
 apiVersion: extensions/v1beta1
@@ -60,28 +60,28 @@ spec:
     http:
       paths:
       - backend:
-          serviceName: hello-world2
+          serviceName: hello-world-l7
           servicePort: 80
 ---
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: dcos-site2
+  name: dcos-site-l7
   labels:
-    app: dcos-site2
+    app: dcos-site-l7
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: dcos-site2
+      app: dcos-site-l7
   template:
     metadata:
       labels:
-        app: dcos-site2
+        app: dcos-site-l7
     spec:
       containers:
-      - name: dcos-site2
+      - name: dcos-site-l7
         image: mesosphere/dcos-website:cff383e4f5a51bf04e2d0177c5023e7cebcab3cc
         ports:
         - containerPort: 80
@@ -90,9 +90,9 @@ apiVersion: v1
 kind: Service
 metadata:
   labels:
-    app: dcos-site2
+    app: dcos-site-l7
     owner: dklb
-  name: dcos-site2
+  name: dcos-site-l7
 spec:
   ports:
   - nodePort: 30910
@@ -100,7 +100,7 @@ spec:
     protocol: TCP
     targetPort: 80
   selector:
-    app: dcos-site2
+    app: dcos-site-l7
   type: NodePort
 ---
 apiVersion: extensions/v1beta1
@@ -114,12 +114,12 @@ metadata:
     kubernetes.dcos.io/edgelb-pool-mem: "1024Mi"
   labels:
     owner: dklb
-  name: dcos-site2
+  name: dcos-site-l7
 spec:
   rules:
   - host: "mke-l7.ddns.net"
     http:
       paths:
       - backend:
-          serviceName: dcos-site2
+          serviceName: dcos-site-l7
           servicePort: 80

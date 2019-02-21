@@ -1,0 +1,19 @@
+#!/bin/bash
+
+# Download the latest release of Istio usign the following command:
+curl -L https://git.io/getLatestIstio | sh -
+
+# Run the following commands to go to the Istio directory and to install Istio using Helm:
+cd istio-1.0.6
+export PATH=$PWD/bin:$PATH
+helm install install/kubernetes/helm/istio --name istio --namespace istio-system \
+  --set gateways.istio-ingressgateway.serviceAnnotations."kubernetes\.dcos\.io/edgelb-pool-name"=istio-pool \
+  --set gateways.istio-ingressgateway.serviceAnnotations."kubernetes\.dcos\.io/edgelb-pool-size"=\"1\" \
+  --set gateways.istio-ingressgateway.ports[0].port=10002 \
+  --set gateways.istio-ingressgateway.ports[0].targetPort=83 \
+  --set gateways.istio-ingressgateway.ports[0].name=http2 \
+  --set gateways.istio-ingressgateway.ports[0].nodePort=30000
+
+#kubectl apply -f <(istioctl kube-inject -f istio-1.0.6/samples/bookinfo/platform/kube/bookinfo.yaml)
+
+#kubectl apply -f istio-1.0.6/samples/bookinfo/networking/bookinfo-gateway.yaml
