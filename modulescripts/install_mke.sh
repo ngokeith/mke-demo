@@ -1,5 +1,13 @@
 #!/bin/bash
 
+if [[ $1 == "" ]]
+then
+        echo
+        echo " Kubernetes package version was not entered. Aborting."
+        echo
+        exit 1
+fi
+
 echo
 echo "**** Creating service account for MKE /kubernetes"
 echo

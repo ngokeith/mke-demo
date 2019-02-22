@@ -24,6 +24,7 @@ export GITLAB_PUBLIC_IP=$(dcos task exec -it kubectl-two-clusters__edgelb-pool- 
 echo Public IP of Edge-LB node is: $GITLAB_PUBLIC_IP
 # NOTE, if that approach to finding the public IP doesn't work, consider https://github.com/ably77/dcos-se/tree/master/Kubernetes/mke/public_ip
 
+
 #### WAIT FOR MKE-L7.DDNS.NET HELLO-WORLD SERVICE TO BE EXPOSED BY EDGELB
 seconds=0
 OUTPUT=1
@@ -50,7 +51,6 @@ while [ "$OUTPUT" != 0 ]; do
   fi
 done
 
-
 #### OPEN WORKLOADS
 echo "Opening workloads..."
 echo
@@ -61,13 +61,14 @@ open -na "/Applications/Google Chrome.app"/ `dcos config show core.dcos_url`/ser
 echo
 open -na "/Applications/Google Chrome.app"/ http://$GITLAB_PUBLIC_IP:10006
 echo
+open -na "/Applications/Google Chrome.app"/ http://dcos-jupyterlabdemo.ddns.net:10005/datascience/jupyterlab-notebook
+echo
 open -na "/Applications/Google Chrome.app"/ http://$DEV_POOL_PUBLIC_IP:10001
 sleep 1
 open -na "/Applications/Google Chrome.app"/ http://mke-l7.ddns.net:80
 sleep 1
 open -na "/Applications/Google Chrome.app"/ http://mke-l7.ddns.net:81
 sleep 1
-open -na "/Applications/Google Chrome.app"/ http://mke-l7.ddns.net:81/docs/latest/
 echo
 echo
 echo -e "To enable Mesos Metrics, if on CoreOS run \x1B[1m./start_vpn_coreos.sh \x1B[0m before executing \x1B[1m./enable_mesos_metrics_coreos.sh\x1B[0m in a seperate tab"

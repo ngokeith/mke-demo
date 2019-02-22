@@ -1,5 +1,5 @@
 # Setup Script for Two K8s Clusters on DC/OS ("2k8s")
-Revision 2-20-19
+Revision 2-22-19
 
 This is a script for Enterprise DC/OS 1.12 that will setup two Kubernetes clusters with L4/L7 Ingress, Gitlab, Jenkins, a Prometheus/Grafana monitoring stack, and a Kafka monitoring demonstration  
 
@@ -15,35 +15,45 @@ In the order below, this script will:
 
 4. Move existing kube config to /tmp/kubectl-config so we can set up a new kube config
 
-5. Add repo and install Edge-LB - deploy kubectl pool once completed
+5. Create additional EBS volumes and Install Portworx if Optional Variable is set to "true"
 
-6. Set up Service Accounts and Install MKE Kubernetes engine
+6. Add repo and install Edge-LB - deploy kubectl pool once completed
 
-7. Set up Service Accounts and Install /prod/kubernetes-prod cluster
+7. Set up Service Accounts and Install MKE Kubernetes engine
+
+8. Set up Service Accounts and Install /prod/kubernetes-prod cluster
 - HA Deployment (3x etcd / 3x control-plane), 2 private nodes, RBAC enabled, control plane CPU lowered to 0.5, private reserved resources kube cpus lowered to 1     
 
-8. Set up Service Accounts and Install /dev/kubernetes-dev cluster
+9. Set up Service Accounts and Install /dev/kubernetes-dev cluster
 - Non-HA deployment, 1 private node, control plane CPU lowered to 0.5, private reserved resources kube cpus lowered to 1  
 
-9. Install Jenkins in /dev/jenkins
+10. Install HDFS if Optional Variable is set to "true"
 
-10. Install Gitlab in /dev/gitlab-dev, expose gitlab-dev on your EDGELB_PUBLIC_AGENT_IP:10006
+11. Install Jenkins in /dev/jenkins
 
-11. Install Kafka - Create a topic called performancetest
+12. Install Gitlab in /dev/gitlab-dev, expose gitlab-dev on your EDGELB_PUBLIC_AGENT_IP:10006
 
-12. Wait for Kubernetes to complete deployment and connect clusters /dev/kubernetes-dev and /prod/kubernetes-prod using kubectl
+13. Install Jupyterlabs Notebook if Optional Variable is set to "true"
 
-13. Deploy Kafka producer deployment `kafka-producer.yaml` on /prod/kubernetes-prod that sends data to Kafka
+14. Install Kafka - Create a topic called performancetest
 
-14. Install DKLB (beta) for L4/L7 Ingress on MKE
+15. Set up RBAC users and groups (prod/prod-user, dev/dev-user, infra/infra-user)
 
-15. Multiple Hello World services, and multiple DC/OS Websites exposed on L4 and L7 through Edge-LB
+16. Wait for Kubernetes to complete deployment and connect clusters /dev/kubernetes-dev and /prod/kubernetes-prod using kubectl
 
-16. Create a prod-user in the prod group and a dev-user in the dev group both with the default DC/OS password
+17. Deploy Kafka producer deployment `kafka-producer.yaml` on /prod/kubernetes-prod that sends data to Kafka
 
-17. Install dcos-monitoring and open up Grafana dashboard
+18. Install DKLB for L4/L7 Ingress on MKE
 
-18. Open up Gitlab, L4 and L7 services in your browser
+19. Multiple Hello World services, and multiple DC/OS Websites exposed on L4 and L7 through Edge-LB
+
+20. Install dcos-monitoring and open up Grafana dashboard
+
+21. Install Cassandra if Optional Variable is set to "true"
+
+22. Open up Gitlab, Jupyterlab, L4 and L7 services in your browser
+
+23. Open the Portworx Lighthouse UI if Optional Variable is set to "true"
 
 ## PREREQUISITES
 

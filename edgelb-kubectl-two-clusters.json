@@ -25,6 +25,13 @@
 				}
 			},
 			{
+				"bindPort": 10005,
+				"protocol": "HTTP",
+				"linkBackend": {
+					"defaultBackend": "jupyter-backend"
+				}
+			},
+			{
 				"bindPort": 10006,
 				"protocol": "HTTP",
 				"linkBackend": {
@@ -55,6 +62,17 @@
 					},
 					"endpoint": {
 						"portName": "apiserver"
+					}
+				}]
+			},
+			{
+				"name": "jupyter-backend",
+				"protocol": "HTTP",
+				"services": [{
+					"endpoint": {
+						"type": "ADDRESS",
+						"address": "datasciencejupyterlab-notebook.marathon.l4lb.thisdcos.directory",
+						"port": 8888
 					}
 				}]
 			},

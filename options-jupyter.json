@@ -1,0 +1,53 @@
+{
+  "service": {
+    "name": "/datascience/jupyterlab-notebook",
+    "cmd": "/usr/local/bin/start.sh ${CONDA_DIR}/bin/jupyter lab --notebook-dir=${MESOS_SANDBOX}",
+    "cpus": 1.5,
+    "force_pull": false,
+    "mem": 8192,
+    "user": "nobody",
+    "gpu_support": {
+      "enabled": false,
+      "gpus": 0
+    }
+  },
+  "networking": {
+    "cni_support": {
+      "enabled": true
+    },
+    "external_access": {
+      "enabled": true,
+      "external_public_agent_hostname": "dcos-jupyterlabdemo.ddns.net"
+    }
+  },
+  "spark": {
+    "spark_driver_cores": 1,
+    "spark_driver_memory": "2g",
+    "spark_conf_spark_scheduler": "spark.scheduler.minRegisteredResourcesRatio=1.0",
+    "spark_conf_cores_max": "spark.cores.max=3",
+    "spark_conf_executor_cores": "spark.executor.cores=1",
+    "spark_conf_executor_memory": "spark.executor.memory=2g"
+  },
+  "environment": {
+    "secrets": false,
+    "service_credential": "jupyterlab-notebook/serviceCredential",
+    "conda_envs_path": "/mnt/mesos/sandbox/conda/envs:/opt/conda/envs",
+    "conda_pkgs_dir": "/mnt/mesos/sandbox/conda/pkgs:/opt/conda/pkgs",
+    "dcos_dir": "/mnt/mesos/sandbox/.dcos",
+    "hadoop_conf_dir": "/mnt/mesos/sandbox",
+    "home": "/mnt/mesos/sandbox",
+    "java_opts": "\"-server -XX:+UseG1GC -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/mnt/mesos/sandbox\"",
+    "jupyter_conf_urls": "",
+    "jupyter_config_dir": "/mnt/mesos/sandbox/.jupyter",
+    "jupyter_password": "jupyter",
+    "jupyter_runtime_dir": "/mnt/mesos/sandbox/.local/share/jupyter/runtime",
+    "nginx_log_level": "warn",
+    "start_dask_distributed": false,
+    "start_ray_head_node": false,
+    "start_spark_history_server": false,
+    "start_tensorboard": false,
+    "user": "nobody",
+    "tensorboard_logdir": "hdfs://hdfs/",
+    "term": "xterm-256color"
+  }
+}

@@ -1,7 +1,7 @@
 #!/bin/bash
 kubectx prod
 
-kubectl delete -f multi-service-l4.yaml
+kubectl delete -f multi-service-l7.yaml
 kubectl delete -f kafka-producer.yaml
 kubectl delete -f dklb-deployment-dev.yaml
 kubectl delete -f dklb-prereqs.yaml
@@ -19,6 +19,10 @@ dcos package uninstall kafka --yes
 dcos package uninstall beta-dcos-monitoring --yes
 
 dcos package uninstall cassandra --yes
+
+dcos package uninstall hdfs --yes
+
+dcos package uninstall jupyterlab --yes
 
 dcos kubernetes cluster delete --cluster-name=dev/kubernetes-dev --yes
 

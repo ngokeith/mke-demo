@@ -8,14 +8,6 @@ export PROD_POOL_PUBLIC_IP=$(dcos task exec -it dcos-edgelb.pools.prod-lb-pool c
 echo Public IP of prod-lb-pool is: $PROD_POOL_PUBLIC_IP
 # NOTE, if that approach to finding the public IP doesn't work, consider https://github.com/ably77/dcos-se/tree/master/Kubernetes/mke/public_ip
 
-#### GET PUBLIC IP OF DEV POOL
-echo
-echo "**** Setting env var DEV_POOL_PUBLIC_IP"
-echo
-export DEV_POOL_PUBLIC_IP=$(dcos task exec -it dcos-edgelb.pools.dev-lb-pool curl ifconfig.co | tr -d '\r' | tr -d '\n')
-echo Public IP of dev-lb-pool is: $DEV_POOL_PUBLIC_IP
-# NOTE, if that approach to finding the public IP doesn't work, consider https://github.com/ably77/dcos-se/tree/master/Kubernetes/mke/public_ip
-
 #### GET PUBLIC IP OF GITLAB POOL
 echo
 echo "**** Setting env var EDGELB_PUBLIC_AGENT_IP"
@@ -52,6 +44,6 @@ fi
 
 echo "**** Adding entries to /etc/hosts for mke-l7.ddns.net for $PROD_POOL_PUBLIC_IP"
 echo "$PROD_POOL_PUBLIC_IP mke-l7.ddns.net" >> /etc/hosts
-echo "$DEV_POOL_PUBLIC_IP mke-l7.ddns.net" >> /etc/hosts
 echo "$GITLAB_POOL_PUBLIC_IP dcos-gitlabdemo.ddns.net" >> /etc/hosts
+echo "$GITLAB_POOL_PUBLIC_IP dcos-jupyterlabdemo.ddns.net" >> /etc/hosts
 # to bypass DNS & hosts file: curl -H "Host: www.apache.test" $EDGELB_PUBLIC_AGENT_IP

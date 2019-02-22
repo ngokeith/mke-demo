@@ -1,5 +1,13 @@
 #!/bin/bash
 
+if [[ $1 == "" ]]
+then
+        echo
+        echo " Portworx version was not entered. Aborting."
+        echo
+        exit 1
+fi
+
 path=infra/storage/portworx
 serviceaccount=infra-storage-portworx
 

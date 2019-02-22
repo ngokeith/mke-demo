@@ -1,5 +1,13 @@
 #!/bin/bash
 
+if [[ $1 == "" ]]
+then
+        echo
+        echo " Edgelb version was not entered. Aborting."
+        echo
+        exit 1
+fi
+
 #### INSTALL EDGE-LB
 
 echo
