@@ -45,5 +45,5 @@ fi
 echo "**** Adding entries to /etc/hosts for mke-l7.ddns.net for $PROD_POOL_PUBLIC_IP"
 echo "$PROD_POOL_PUBLIC_IP mke-l7.ddns.net" >> /etc/hosts
 echo "$GITLAB_POOL_PUBLIC_IP dcos-gitlabdemo.ddns.net" >> /etc/hosts
-echo "$GITLAB_POOL_PUBLIC_IP dcos-jupyterlabdemo.ddns.net" >> /etc/hosts
+#echo "$GITLAB_POOL_PUBLIC_IP dcos-jupyterlabdemo.ddns.net" >> /etc/hosts
 # to bypass DNS & hosts file: curl -H "Host: www.apache.test" $EDGELB_PUBLIC_AGENT_IP

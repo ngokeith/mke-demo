@@ -61,7 +61,7 @@ open -na "/Applications/Google Chrome.app"/ `dcos config show core.dcos_url`/ser
 echo
 open -na "/Applications/Google Chrome.app"/ http://$GITLAB_PUBLIC_IP:10006
 echo
-open -na "/Applications/Google Chrome.app"/ http://dcos-jupyterlabdemo.ddns.net:10005/datascience/jupyterlab-notebook
+open -na "/Applications/Google Chrome.app"/ http://$GITLAB_PUBLIC_IP:10005/datascience/jupyterlab-notebook
 echo
 open -na "/Applications/Google Chrome.app"/ http://$DEV_POOL_PUBLIC_IP:10001
 sleep 1

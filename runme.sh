@@ -1,6 +1,16 @@
 #!/bin/bash
 
-SCRIPT_VERSION="FEB-22-2019"
+# This script is ran via sudo since /etc/hosts is modified. But it also sets up kubectl and the dcos CLI
+# which means some of those files now belong to root
+# If you ever break out of this script,this command is run to return permissions from sudo
+# sudo chown -RH $USER ~/.kube ~/.dcos
+
+function finish {
+  sudo chown -RH $USER ~/.kube ~/.dcos
+}
+trap finish EXIT
+
+SCRIPT_VERSION="FEB-25-2019"
 
 ######## REQUIRED VARIABLES ########
 JENKINS_VERSION="3.5.2-2.107.2"
@@ -17,17 +27,25 @@ VHOST="mke-l7.ddns.net"
 
 ######## OPTIONAL VARIABLES ########
 #
-# MAKE SURE YOU HAVE ENOUGH RESOURCES IN YOUR CLUSTER IF YOU SET BELOW TO TRUE
-PORTWORX_ENABLED="true"
+# MAKE SURE YOU HAVE ENOUGH EXTRA RESOURCES IN YOUR CLUSTER IF YOU SET BELOW TO TRUE
+#
+# IF ALL FEATURES ARE SET TO TRUE YOU WILL NEED A TOTAL OF AT LEAST 49.3 CPU shares:
+# 7 8vCPU Private Agents
+# 1 4vCPU Public Agent
+#
+#
+# PORTWORX INSTALLATION FOR 7 PRIVATE AGENT NODES CAN TAKE UP TO 10-15 ADDITIONAL MINUTES
+PORTWORX_ENABLED="false"
 JUPYTERLAB_ENABLED="true"
 # HDFS Requires minimum 6 Private Agent nodes in your cluster
 HDFS_ENABLED="false"
-CASSANDRA_ENABLED="false"
+CASSANDRA_ENABLED="true"
 
-
+# OPTIONAL PACKAGE VERSIONS
 PORTWORX_VERSION="1.3.3-1.6.1.1"
 CASSANDRA_VERSION="2.3.0-3.0.16"
 HDFS_VERSION="2.5.0-2.6.0-cdh5.11.0"
+PORTWORX_HDFS_VERSION="1.2-2.6.0"
 JUPYTERLAB_VERSION="1.2.0-0.33.7"
 
 LICENSE_FILE="<ALTERNATE/PATH/TO/LICENSE/FILE>"
@@ -69,11 +87,21 @@ MASTER_URL=$(echo $1 | sed 's/http/https/')
 
 ./modulescripts/setup_ssh.sh $SSH_KEY_FILE
 
-#### CHANGE OWNERSHIP BACK TO USER
-sudo chown -RH $USER ~/.kube ~/.dcos
+#### INSTALL HDFS
+if [ "$HDFS_ENABLED" = "true" ] && [ "$PORTWORX_ENABLED" = "false" ]; then
+
+  ./modulescripts/install_hdfs.sh $HDFS_VERSION
+
+  sleep 10
+
+  ./modulescripts/install_cli.sh hdfs
+
+  #./modulescripts/check-status-with-name.sh hdfs hdfs 300
+
+fi
 
 #### INSTALL PORTWORX
-if [ "$PORTWORX_ENABLED" = "true" ]; then
+if [ "$PORTWORX_ENABLED" = "true" ] && [ "$HDFS_ENABLED" = "false" ]; then
   #### CREATE AND ATTACH AWS EBS VOLUMES
   ./modulescripts/create_and_attach_volumes.sh
 
@@ -81,10 +109,29 @@ if [ "$PORTWORX_ENABLED" = "true" ]; then
   ./modulescripts/setup_portworx_options.sh
 
   ./modulescripts/install_portworx.sh $PORTWORX_VERSION
+
+  ./modulescripts/install_cli.sh portworx
+
+  sleep 10
+
+  ./modulescripts/check-status-with-name.sh portworx /infra/storage/portworx 600-900
+
+fi
+
+if [ "$PORTWORX_ENABLED" = "true" ] && [ "$HDFS_ENABLED" = "true" ]; then
+
+  #### INSTALL PORTWORX-HADOOP
+  ./modulescripts/install_px_hdfs.sh $PORTWORX_HDFS_VERSION
+
+  ./modulescripts/check-status-with-name.sh hdfs portworx-hadoop 300
+
+
 fi
 
 #### INSTALL EDGELB
 ./modulescripts/install_edgelb.sh $EDGE_LB_VERSION
+
+./modulescripts/install_cli.sh edgelb
 
 #### DEPLOY EDGELB CONFIG FOR KUBECTL
 ./modulescripts/kubectl_edgelb.sh
@@ -99,21 +146,31 @@ fi
 #### SETUP AND INSTALL MKE /kubernetes
 ./modulescripts/install_mke.sh $K8S_MKE_VERSION
 
+./modulescripts/install_cli.sh kubernetes
+
 #### SETUP SERVICE ACCOUNT FOR /PROD/KUBERNETES-PROD AND INSTALL K8S
 ./modulescripts/setup_prodk8s_SA.sh $K8S_PROD_VERSION
 
 #### SETUP SERVICE ACCOUNT FOR /DEV/KUBERNETES-DEV AND INSTALL K8S
 ./modulescripts/setup_devk8s_SA.sh $K8S_DEV_VERSION
 
-#### INSTALL HDFS
-if [ "$HDFS_ENABLED" = "true" ]; then
+#### INSTALL CASSANDRA
+if [ "$CASSANDRA_ENABLED" = "true" ]; then
 
-  ./modulescripts/install_hdfs.sh $HDFS_VERSION
+  ./modulescripts/install_cassandra.sh $CASSANDRA_VERSION
+
+  ./modulescripts/install_cli.sh cassandra
+
+  sleep 10
+
+  ./modulescripts/check-status-with-name.sh cassandra cassandra 150-200
 
 fi
 
 #### INSTALL /DEV/JENKINS
 ./modulescripts/install_jenkins.sh $JENKINS_VERSION
+
+./modulescripts/install_cli.sh jenkins
 
 #### INSTALL /DEV/GITLAB-DEV
 ./modulescripts/install_gitlab.sh
@@ -128,7 +185,9 @@ fi
 #### INSTALL KAFKA
 ./modulescripts/install_kafka.sh $KAFKA_VERSION
 
-./modulescripts/check-status-with-name.sh kafka kafka
+./modulescripts/install_cli.sh kafka
+
+./modulescripts/check-status-with-name.sh kafka kafka 90-120
 
 #### CREATE KAFKA TOPIC
 dcos kafka topic create performancetest --partitions 10 --replication 3 --name=kafka
@@ -178,14 +237,12 @@ rm -f edge-lb-public-key.pem 2> /dev/null
 #### INSTALL DCOS-MONITORING
 ./modulescripts/install_monitoring.sh $DCOS_MONITORING_VERSION
 
-./modulescripts/check-status-with-name.sh beta-dcos-monitoring dcos-monitoring
+./modulescripts/install_cli.sh beta-dcos-monitoring
 
-#### INSTALL CASSANDRA
-if [ "$CASSANDRA_ENABLED" = "true" ]; then
+sleep 10
 
-  ./modulescripts/install_cassandra.sh $CASSANDRA_VERSION
+./modulescripts/check-status-with-name.sh beta-dcos-monitoring dcos-monitoring 90-120
 
-fi
 
 #### SETUP HOSTS FILE FOR mke-l7.ddns.net
 echo may need your password to modify /etc/hosts
@@ -200,14 +257,3 @@ if [ "$PORTWORX_ENABLED" = "true" ]; then
 ./modulescripts/open_pxlighthouse.sh
 
 fi
-
-# This script is ran via sudo since /etc/hosts is modified. But it also sets up kubectl and the dcos CLI
-# which means some of those files now belong to root
-
-echo
-echo "Running: chown -RH $USER ~/.kube ~/.dcos since this script is ran via sudo"
-echo
-echo "If you ever break out of this script, you must run this command"
-sudo chown -RH $USER ~/.kube ~/.dcos
-echo
-echo
