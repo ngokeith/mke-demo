@@ -36,10 +36,10 @@ VHOST="mke-l7.ddns.net"
 #
 # PORTWORX INSTALLATION FOR 7 PRIVATE AGENT NODES CAN TAKE UP TO 10-15 ADDITIONAL MINUTES
 PORTWORX_ENABLED="false"
-JUPYTERLAB_ENABLED="true"
+JUPYTERLAB_ENABLED="false"
 # HDFS Requires minimum 6 Private Agent nodes in your cluster
 HDFS_ENABLED="false"
-CASSANDRA_ENABLED="true"
+CASSANDRA_ENABLED="false"
 
 # OPTIONAL PACKAGE VERSIONS
 PORTWORX_VERSION="1.3.3-1.6.1.1"
@@ -96,7 +96,7 @@ if [ "$HDFS_ENABLED" = "true" ] && [ "$PORTWORX_ENABLED" = "false" ]; then
 
   ./modulescripts/install_cli.sh hdfs
 
-  #./modulescripts/check-status-with-name.sh hdfs hdfs 300
+  ./modulescripts/check-status-with-name.sh hdfs hdfs 300
 
 fi
 
@@ -120,8 +120,24 @@ fi
 
 if [ "$PORTWORX_ENABLED" = "true" ] && [ "$HDFS_ENABLED" = "true" ]; then
 
+  #### CREATE AND ATTACH AWS EBS VOLUMES
+  ./modulescripts/create_and_attach_volumes.sh
+
+  #### INSTALL PORTWORX
+  ./modulescripts/setup_portworx_options.sh
+
+  ./modulescripts/install_portworx.sh $PORTWORX_VERSION
+
+  ./modulescripts/install_cli.sh portworx
+
+  sleep 10
+
+  ./modulescripts/check-status-with-name.sh portworx /infra/storage/portworx 600-900
+
   #### INSTALL PORTWORX-HADOOP
   ./modulescripts/install_px_hdfs.sh $PORTWORX_HDFS_VERSION
+
+  ./modulescripts/install_cli.sh hdfs
 
   ./modulescripts/check-status-with-name.sh hdfs portworx-hadoop 300
 
@@ -164,21 +180,6 @@ if [ "$CASSANDRA_ENABLED" = "true" ]; then
   sleep 10
 
   ./modulescripts/check-status-with-name.sh cassandra cassandra 150-200
-
-fi
-
-#### INSTALL /DEV/JENKINS
-./modulescripts/install_jenkins.sh $JENKINS_VERSION
-
-./modulescripts/install_cli.sh jenkins
-
-#### INSTALL /DEV/GITLAB-DEV
-./modulescripts/install_gitlab.sh
-
-#### INSTALL JUPYTERLABS
-if [ "$JUPYTERLAB_ENABLED" = "true" ]; then
-
-  ./modulescripts/install_jupyterlabs.sh $JUPYTERLAB_VERSION
 
 fi
 
@@ -233,6 +234,16 @@ rm -f private-key.pem 2> /dev/null
 rm -f public-key.pem 2> /dev/null
 rm -f edge-lb-private-key.pem 2> /dev/null
 rm -f edge-lb-public-key.pem 2> /dev/null
+rm -f private-infra-storage-portworx.pem 2> /dev/null
+rm -f public-infra-storage-portworx.pem 2> /dev/null
+
+#### INSTALL /DEV/JENKINS
+./modulescripts/install_jenkins.sh $JENKINS_VERSION
+
+./modulescripts/install_cli.sh jenkins
+
+#### INSTALL /DEV/GITLAB-DEV
+./modulescripts/install_gitlab.sh
 
 #### INSTALL DCOS-MONITORING
 ./modulescripts/install_monitoring.sh $DCOS_MONITORING_VERSION
@@ -243,6 +254,13 @@ sleep 10
 
 ./modulescripts/check-status-with-name.sh beta-dcos-monitoring dcos-monitoring 90-120
 
+
+#### INSTALL JUPYTERLABS
+if [ "$JUPYTERLAB_ENABLED" = "true" ]; then
+
+  ./modulescripts/install_jupyterlabs.sh $JUPYTERLAB_VERSION
+
+fi
 
 #### SETUP HOSTS FILE FOR mke-l7.ddns.net
 echo may need your password to modify /etc/hosts
