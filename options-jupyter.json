@@ -2,8 +2,8 @@
   "service": {
     "name": "/datascience/jupyterlab-notebook",
     "cmd": "/usr/local/bin/start.sh ${CONDA_DIR}/bin/jupyter lab --notebook-dir=${MESOS_SANDBOX}",
-    "cpus": 1.5,
-    "force_pull": false,
+    "cpus": 2.0,
+    "force_pull": true,
     "mem": 8192,
     "user": "nobody",
     "gpu_support": {
