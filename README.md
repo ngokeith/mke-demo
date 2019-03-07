@@ -168,3 +168,38 @@ If you have the `watch` command installed on your local machine you can use the 
 ```
 ./modulescripts/extras/watch_k8s_upgrade.sh
 ```
+
+#### Set Up and Demo Portworx PersistentVolumeClaim
+
+If portworx is installed on your cluster you can demo kubernetes consuming a portworx enabled PVC.
+
+First set up your kubernetes PVC. If you take a look at the script, this is what it does:
+- Set the context to kubernetes-prod
+- Install Portworx Stork for kubernetes
+- Creates a kubernetes StorageClass for Portworx
+- Define StorageClass as the default Storage Class in your kubernetes cluster
+- Create the kubernetes Portworx PersistentVolumeClaim
+- Check status of the PVC
+
+```
+./modulescripts/extras/setup_px_k8s_pvc.sh
+```
+
+Run the script below to demo storage persistence using the PVC that was just set up. The demo will prompt you and walk you through the commands to create the `pvc-pod.yaml` which uses the portworx volume that we just created, load data, destroy the pod, and demonstrate data persistence by creating a second pod that uses the same volume.
+```
+./modulescripts/extras/demo_px_k8s_pvc.sh
+```
+
+#### Demonstrate Region Aware Deployment of Kubernetes
+
+If you have multiple regions in your DC/OS cluster, you can demonstrate a region aware deployment of a kubernetes cluster. For this demo we will build a cluster called uat/kubernetes-uat
+
+Run the script below and follow the instructions to designate your kubernetes cluster region. This script will:
+- Set up the uat/kubernetes-uat kubernetes service account, secrets, and permissions if they don't exist already
+- Allow you to select a region for your deployment (i.e. us-west-2 or us-east-1)
+- Allow you to select your kubernetes version for the uat/kubernetes-uat deployment
+- Deploy your uat/kubernetes-uat cluster
+
+```
+./modulescripts/extras/regionaware/setup_regionaware_k8soptions.sh
+```
