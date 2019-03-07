@@ -201,5 +201,5 @@ Run the script below and follow the instructions to designate your kubernetes cl
 - Deploy your uat/kubernetes-uat cluster
 
 ```
-./modulescripts/extras/regionaware/setup_regionaware_k8soptions.sh
+modulescripts/extras/regionaware/setup_regionaware_k8suat.sh
 ```
