@@ -93,6 +93,32 @@ sudo chmod +x /usr/local/bin/dcos
 
 ### EXTENDING THIS DEMO
 
+#### OPTIONAL Variables
+
+Optional variables in `runme.sh`:
+
+If you set the extra add-ons below to `true`, make sure you have enough resources in your cluster to complete the demo:
+- If all all features are set to `true` you will need a total of at least 49.3 CPU shares
+  - 7x 8-core Private agents
+  - 1x 4-core Public Agent
+- Portworx Installation for 7 Private Agent nodes can take up to 10-15 additional minutes
+- HDFS requires minimum 6 private agent nodes in your cluster
+
+```
+######## OPTIONAL VARIABLES ########
+PORTWORX_ENABLED="false"
+JUPYTERLAB_ENABLED="false"
+HDFS_ENABLED="false"
+CASSANDRA_ENABLED="false"
+
+# OPTIONAL PACKAGE VERSIONS
+PORTWORX_VERSION="1.3.3-1.6.1.1"
+CASSANDRA_VERSION="2.3.0-3.0.16"
+HDFS_VERSION="2.5.0-2.6.0-cdh5.11.0"
+PORTWORX_HDFS_VERSION="1.2-2.6.0"
+JUPYTERLAB_VERSION="1.2.0-0.33.7"
+```
+
 #### Scaling Kubernetes
 
 To scale your kubernetes cluster run the script below:
