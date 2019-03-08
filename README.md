@@ -119,54 +119,52 @@ PORTWORX_HDFS_VERSION="1.2-2.6.0"
 JUPYTERLAB_VERSION="1.2.0-0.33.7"
 ```
 
-#### Scaling Kubernetes
+#### Upgrading a Framework service
 
-To scale your kubernetes cluster run the script below:
+To upgrade a Framework service run the script below:
 ```
-./modulescripts/extras/scale_k8s.sh
-```
-
-This will scale your prod/kubernetes-prod deployment from 2 kubelets to 4 kubelets
-
-#### Upgrading Kubernetes
-
-To upgrade your kubernetes cluster run the script below:
-```
-./modulescripts/extras/upgrade_k8s.sh
+./modulescripts/upgrade_service.sh
 ```
 
-The script will display the available upgrade/downgrade versions as well as let you specify which kubernetes cluster to upgrade. Output should look similar to below:
+The script will prompt you for the Framework Name and Service Name, and then will display the available upgrade/downgrade versions
+
+Output should look similar to below:
 ```
-$ ./modulescripts/extras/upgrade_k8s.sh
-Current package version is: 2.2.0-1.13.3
-No valid package downgrade versions.
-Package can be upgraded to:
-- 2.2.0-1.13.3
-- 2.1.1-1.12.5
-- 2.1.0-1.12.3
-- 1.3.1-1.10.8
-- 1.3.0-1.10.8
-- 1.2.2-1.10.7
-- 1.2.1-1.10.6
-- 1.2.0-1.10.5
-- 1.1.1-1.10.4
-- 1.1.0-1.10.3
-- 1.0.3-1.9.7
-- 1.0.2-1.9.6
-Input Package Version to Upgrade To: 2.2.0-1.13.3
-Input Cluster ID to Upgrade (i.e. prod/kubernetes-prod or dev/kubernetes-dev): dev/kubernetes-dev
-Using Kubernetes cluster: dev/kubernetes-dev
-About to start an update from version 2.1.1-1.12.5 to 2.2.0-1.13.3
-Updating these components means the Kubernetes cluster may experience some
-downtime or, in the worst-case scenario, cease to function properly.
-Before updating proceed cautiously and always backup your data.
-This operation is long-running and has to run to completion.
-Continue cluster update? [yes/no]: yes
+$ ./modulescripts/upgrade_service.sh
+Input Framework Name (i.e. cassandra  kafka  elastic  kubernetes): kafka
+Input Service Name (i.e. /dataservices/cassandra /dataservices/kafka  prod/kubernetes-prod dev/kubernetes-dev): kafka
+Current package version is: "2.3.0-1.0.0"
+Package can be downgraded to: ["2.2.0-1.0.0"]
+Package can be upgraded to: ["2.3.0-1.1.0"]
+Input package version to upgrade/downgrade to: 2.2.0-1.0.0
 ```
 
-If you have the `watch` command installed on your local machine you can use the following script to watch your kubernetes upgrade:
+If you have the `watch` command installed on your local machine you can use the following script to watch your service upgrade:
 ```
-./modulescripts/extras/watch_k8s_upgrade.sh
+./modulescripts/watch_upgrade.sh
+```
+
+#### Scaling a Framework Service
+
+To scale a Framework service run the script below:
+```
+./modulescripts/scale_service.sh
+```
+
+The script will prompt you for the Framework Name, Service Name, and options.json path and initiate an upgrade
+
+An example output should look similar to below:
+```
+$ ./modulescripts/scale_service.sh
+Input Framework Name (i.e. cassandra  kafka  elastic  kubernetes): kafka
+Input Service Name (i.e. /dataservices/cassandra /dataservices/kafka  prod/kubernetes-prod dev/kubernetes-dev): kafka
+Input optionsjson name (i.e. options-kafka.json): options-kafka.json
+Update started. Please use `dcos kafka --name=kafka update status` to view progress.
+```
+
+If you have the `watch` command installed on your local machine you can use the following script to watch your service upgrade:
+```
+./modulescripts/watch_upgrade.sh
 ```
 
 #### Set Up and Demo Portworx PersistentVolumeClaim

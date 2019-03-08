@@ -40,6 +40,7 @@ JUPYTERLAB_ENABLED="false"
 # HDFS Requires minimum 6 Private Agent nodes in your cluster
 HDFS_ENABLED="false"
 CASSANDRA_ENABLED="false"
+HYBRID_DEMO_ENABLED="false"
 
 # OPTIONAL PACKAGE VERSIONS
 PORTWORX_VERSION="1.3.3-1.6.1.1"
@@ -275,3 +276,8 @@ if [ "$PORTWORX_ENABLED" = "true" ]; then
 ./modulescripts/open_pxlighthouse.sh
 
 fi
+
+#### HYBRID CLOUD DEMO
+#if [ "$HYBRID_DEMO_ENABLED" = "true" ]; then
+#
+#fi
