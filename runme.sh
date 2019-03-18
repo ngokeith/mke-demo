@@ -234,6 +234,13 @@ dcos kafka topic create performancetest --partitions 10 --replication 3 --name=k
 #### DEPLOY SERVICES ON /DEV/KUBERNETES-DEV
 ./modulescripts/install_k8s_devservices.sh
 
+#### CONNECT HYBRID CLOUD UAT/KUBERNETES_UAT CLUSTER
+if [ "$REGIONAWARE_DEMO_ENABLED" = "true" ]; then
+
+./modulescripts/connect_k8suat.sh
+
+fi
+
 #### SHOW KUBECTL CONFIG
 
 echo

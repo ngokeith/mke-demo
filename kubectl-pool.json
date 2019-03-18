@@ -29,6 +29,16 @@
 				"linkBackend": {
 					"defaultBackend": "kubernetes-dev"
 				}
+			},
+			{
+				"bindPort": 6445,
+				"protocol": "HTTPS",
+				"certificates": [
+					"$AUTOCERT"
+				],
+				"linkBackend": {
+					"defaultBackend": "kubernetes-uat"
+				}
 			}
 		],
 		"backends": [{
@@ -50,6 +60,19 @@
 				"services": [{
 					"mesos": {
 						"frameworkName": "dev/kubernetes-dev",
+						"taskNamePattern": "kube-control-plane"
+					},
+					"endpoint": {
+						"portName": "apiserver"
+					}
+				}]
+			},
+			{
+				"name": "kubernetes-uat",
+				"protocol": "HTTPS",
+				"services": [{
+					"mesos": {
+						"frameworkName": "uat/kubernetes-uat",
 						"taskNamePattern": "kube-control-plane"
 					},
 					"endpoint": {
