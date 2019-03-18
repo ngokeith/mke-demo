@@ -1,0 +1,56 @@
+{
+	"apiVersion": "V2",
+	"name": "services-pool",
+	"count": 1,
+	"constraints": "hostname:UNIQUE",
+	"cpus": 0.2,
+	"cpusAdminOverhead": 0.1,
+	"disk": 256,
+	"mem": 992,
+	"memAdminOverhead": 32,
+	"haproxy": {
+		"frontends": [{
+				"bindPort": 10005,
+				"protocol": "HTTP",
+				"linkBackend": {
+					"defaultBackend": "jupyter-backend"
+				}
+			},
+			{
+				"bindPort": 10006,
+				"protocol": "HTTP",
+				"linkBackend": {
+					"defaultBackend": "gitlab-backend"
+				}
+			}
+		],
+		"backends": [{
+				"name": "jupyter-backend",
+				"protocol": "HTTP",
+				"services": [{
+					"marathon": {
+						"serviceID": "/datascience/jupyterlab-notebook"
+					},
+					"endpoint": {
+						"portName": "notebook"
+					}
+				}]
+			},
+			{
+				"name": "gitlab-backend",
+				"protocol": "HTTP",
+				"services": [{
+					"marathon": {
+						"serviceID": "/dev/gitlab-dev"
+					},
+					"endpoint": {
+						"portName": "http"
+					}
+				}]
+			}
+		],
+		"stats": {
+			"bindPort": 6091
+		}
+	}
+}

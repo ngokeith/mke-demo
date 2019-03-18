@@ -14,7 +14,9 @@ sleep 15
 kubectl delete -f dklb-deployment-prod.yaml
 kubectl delete -f dklb-prereqs.yaml
 
-dcos edgelb delete edgelb-kubectl-two-clusters
+dcos edgelb delete kubectl-pool
+dcos edgelb delete services-pool
+
 
 dcos package uninstall kafka --yes
 
@@ -31,6 +33,8 @@ dcos package uninstall jupyterlab --yes
 dcos kubernetes cluster delete --cluster-name=dev/kubernetes-dev --yes
 
 dcos kubernetes cluster delete --cluster-name=prod/kubernetes-prod --yes
+
+dcos kubernetes cluster delete --cluster-name=uat/kubernetes-uat --yes
 
 dcos marathon app remove dev/gitlab-dev
 

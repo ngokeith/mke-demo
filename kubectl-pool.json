@@ -1,7 +1,13 @@
 {
 	"apiVersion": "V2",
-	"name": "edgelb-kubectl-two-clusters",
+	"name": "kubectl-pool",
+	"constraints": "hostname:UNIQUE",
 	"count": 1,
+	"cpus": 0.2,
+	"cpusAdminOverhead": 0.1,
+	"disk": 256,
+	"mem": 992,
+	"memAdminOverhead": 32,
 	"autoCertificate": true,
 	"haproxy": {
 		"frontends": [{
@@ -22,20 +28,6 @@
 				],
 				"linkBackend": {
 					"defaultBackend": "kubernetes-dev"
-				}
-			},
-			{
-				"bindPort": 10005,
-				"protocol": "HTTP",
-				"linkBackend": {
-					"defaultBackend": "jupyter-backend"
-				}
-			},
-			{
-				"bindPort": 10006,
-				"protocol": "HTTP",
-				"linkBackend": {
-					"defaultBackend": "gitlab-backend"
 				}
 			}
 		],
@@ -62,29 +54,6 @@
 					},
 					"endpoint": {
 						"portName": "apiserver"
-					}
-				}]
-			},
-			{
-				"name": "jupyter-backend",
-				"protocol": "HTTP",
-				"services": [{
-					"endpoint": {
-						"type": "ADDRESS",
-						"address": "datasciencejupyterlab-notebook.marathon.l4lb.thisdcos.directory",
-						"port": 8888
-					}
-				}]
-			},
-			{
-				"name": "gitlab-backend",
-				"protocol": "HTTP",
-				"services": [{
-					"marathon": {
-						"serviceID": "/dev/gitlab-dev"
-					},
-					"endpoint": {
-						"portName": "http"
 					}
 				}]
 			}

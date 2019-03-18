@@ -2,26 +2,18 @@
 
 #### GET PUBLIC IP OF PROD-LB-POOL
 echo
-echo "**** Setting env var PROD_POOL_PUBLIC_IP"
+echo "**** Setting env var KUBECTL_POOL_PUBLIC_IP"
 echo
-export PROD_POOL_PUBLIC_IP=$(dcos task exec -it dcos-edgelb.pools.prod-lb-pool curl ifconfig.co | tr -d '\r' | tr -d '\n')
-echo Public IP of DKLB Edge-LB node is: $PROD_POOL_PUBLIC_IP
+export KUBECTL_POOL_PUBLIC_IP=$(dcos task exec -it kubectl-pool__edgelb-pool- curl ifconfig.co | tr -d '\r' | tr -d '\n')
+echo Public IP of DKLB Edge-LB node is: $KUBECTL_POOL_PUBLIC_IP
 # NOTE, if that approach to finding the public IP doesn't work, consider https://github.com/ably77/dcos-se/tree/master/Kubernetes/mke/public_ip
 
-#### GET PUBLIC IP OF DEV-LB-POOL
+#### GET PUBLIC IP OF SERVICES POOL
 echo
-echo "**** Setting env var DEV_POOL_PUBLIC_IP"
+echo "**** Setting env var SERVICES_POOL_PUBLIC_IP"
 echo
-export DEV_POOL_PUBLIC_IP=$(dcos task exec -it dcos-edgelb.pools.dev-lb-pool curl ifconfig.co | tr -d '\r' | tr -d '\n')
-echo Public IP of DKLB Edge-LB node is: $DEV_POOL_PUBLIC_IP
-# NOTE, if that approach to finding the public IP doesn't work, consider https://github.com/ably77/dcos-se/tree/master/Kubernetes/mke/public_ip
-
-#### GET PUBLIC IP OF GITLAB POOL
-echo
-echo "**** Setting env var GITLAB_PUBLIC_IP"
-echo
-export GITLAB_PUBLIC_IP=$(dcos task exec -it kubectl-two-clusters__edgelb-pool- curl ifconfig.co | tr -d '\r' | tr -d '\n')
-echo Public IP of Edge-LB node is: $GITLAB_PUBLIC_IP
+export SERVICES_POOL_PUBLIC_IP=$(dcos task exec -it services-pool__edgelb-pool- curl ifconfig.co | tr -d '\r' | tr -d '\n')
+echo Public IP of Edge-LB node is: $SERVICES_POOL_PUBLIC_IP
 # NOTE, if that approach to finding the public IP doesn't work, consider https://github.com/ably77/dcos-se/tree/master/Kubernetes/mke/public_ip
 
 
@@ -30,7 +22,7 @@ seconds=0
 OUTPUT=1
 while [ "$OUTPUT" != 0 ]; do
   seconds=$((seconds+10))
-  if curl -s -H "Host: mke-l7.ddns.net" $PROD_POOL_PUBLIC_IP | grep -q "Hello"; then
+  if curl -s -H "Host: mke-l7.ddns.net" $KUBECTL_POOL_PUBLIC_IP | grep -q "Hello"; then
       OUTPUT=0
   else
       printf "Waited $seconds seconds for L4/L7 services to be exposed. Still waiting.\n"
@@ -43,7 +35,7 @@ seconds=0
 OUTPUT=1
 while [ "$OUTPUT" != 0 ]; do
   seconds=$((seconds+10))
-  if curl -s http://$DEV_POOL_PUBLIC_IP:10001 | grep -q "Hello"; then
+  if curl -s http://$KUBECTL_POOL_PUBLIC_IP:10001 | grep -q "Hello"; then
       OUTPUT=0
   else
       printf "Waited $seconds seconds for L4/L7 services to be exposed. Still waiting. (Make sure ports 10001-10006 are open \n"
@@ -59,11 +51,11 @@ echo
 echo "Accessing Grafana Dashboard in a new browser tab."
 open -na "/Applications/Google Chrome.app"/ `dcos config show core.dcos_url`/service/dcos-monitoring/grafana/
 echo
-open -na "/Applications/Google Chrome.app"/ http://$GITLAB_PUBLIC_IP:10006
+open -na "/Applications/Google Chrome.app"/ http://$SERVICES_POOL_PUBLIC_IP:10006
 echo
-open -na "/Applications/Google Chrome.app"/ http://$GITLAB_PUBLIC_IP:10005/datascience/jupyterlab-notebook
+open -na "/Applications/Google Chrome.app"/ http://$SERVICES_POOL_PUBLIC_IP:10005/datascience/jupyterlab-notebook
 echo
-open -na "/Applications/Google Chrome.app"/ http://$DEV_POOL_PUBLIC_IP:10001
+open -na "/Applications/Google Chrome.app"/ http://$KUBECTL_POOL_PUBLIC_IP:10001
 sleep 1
 open -na "/Applications/Google Chrome.app"/ http://mke-l7.ddns.net:80
 sleep 1

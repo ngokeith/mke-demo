@@ -36,11 +36,11 @@ VHOST="mke-l7.ddns.net"
 #
 # PORTWORX INSTALLATION FOR 7 PRIVATE AGENT NODES CAN TAKE UP TO 10-15 ADDITIONAL MINUTES
 PORTWORX_ENABLED="false"
-JUPYTERLAB_ENABLED="false"
+JUPYTERLAB_ENABLED="true"
 # HDFS Requires minimum 6 Private Agent nodes in your cluster
 HDFS_ENABLED="false"
 CASSANDRA_ENABLED="false"
-HYBRID_DEMO_ENABLED="false"
+REGIONAWARE_DEMO_ENABLED="true"
 
 # OPTIONAL PACKAGE VERSIONS
 PORTWORX_VERSION="1.3.3-1.6.1.1"
@@ -150,8 +150,17 @@ fi
 
 ./modulescripts/install_cli.sh edgelb
 
-#### DEPLOY EDGELB CONFIG FOR KUBECTL
-./modulescripts/kubectl_edgelb.sh
+#### DEPLOY KUBECTL EDGELB POOL
+echo
+echo "**** Deploying Edge-LB config from edgelb-kubectl-two-clusters.json"
+echo
+dcos edgelb create kubectl-pool.json
+
+#### DEPLOY SERVICES EDGELB POOL
+echo
+echo "**** Deploying Edge-LB config from edgelb-kubectl-two-clusters.json"
+echo
+dcos edgelb create services-pool.json
 
 
 #### ADD LATEST MKE STUB UNIVERSE that supports dklb
@@ -170,6 +179,13 @@ fi
 
 #### SETUP SERVICE ACCOUNT FOR /DEV/KUBERNETES-DEV AND INSTALL K8S
 ./modulescripts/setup_devk8s_SA.sh $K8S_DEV_VERSION
+
+#### HYBRID CLOUD DEMO
+if [ "$REGIONAWARE_DEMO_ENABLED" = "true" ]; then
+
+./modulescripts/setup_useast_k8suat.sh
+
+fi
 
 #### INSTALL CASSANDRA
 if [ "$CASSANDRA_ENABLED" = "true" ]; then
@@ -276,8 +292,3 @@ if [ "$PORTWORX_ENABLED" = "true" ]; then
 ./modulescripts/open_pxlighthouse.sh
 
 fi
-
-#### HYBRID CLOUD DEMO
-#if [ "$HYBRID_DEMO_ENABLED" = "true" ]; then
-#
-#fi

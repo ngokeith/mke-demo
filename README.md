@@ -91,7 +91,7 @@ sudo chmod +x /usr/local/bin/dcos
 
 6. Wait for it to finish (~ 10-12 min)
 
-### EXTENDING THIS DEMO
+## EXTENDING THIS DEMO
 
 #### OPTIONAL Variables
 
@@ -199,5 +199,5 @@ Run the script below and follow the instructions to designate your kubernetes cl
 - Deploy your uat/kubernetes-uat cluster
 
 ```
-modulescripts/extras/regionaware/setup_regionaware_k8suat.sh
+./modulescripts/extras/regionaware/setup_regionaware_k8suat.sh
 ```

@@ -4,8 +4,8 @@
 echo
 echo "**** Setting env var DEV_K8S_EDGELB"
 echo
-export DEV_K8S_EDGELB=$(dcos task exec -it kubectl-two-clusters__edgelb-pool- curl ifconfig.co | tr -d '\r' | tr -d '\n')
-echo Public IP of Edge-LB node is: $DEV_K8S_EDGELB
+export KUBECTL_POOL_PUBLIC_IP=$(dcos task exec -it kubectl-pool__edgelb-pool- curl ifconfig.co | tr -d '\r' | tr -d '\n')
+echo Public IP of Edge-LB node is: $KUBECTL_POOL_PUBLIC_IP
 # NOTE, if that approach to finding the public IP doesn't work, consider https://github.com/ably77/dcos-se/tree/master/Kubernetes/mke/public_ip
 
 #### SETUP KUBECTL FOR /PROD/KUBERNETES-PROD
@@ -13,7 +13,7 @@ echo Public IP of Edge-LB node is: $DEV_K8S_EDGELB
 echo
 echo "**** Running dcos kubernetes cluster kubeconfig for /dev/kubernetes-dev, as context 'dev'"
 echo
-dcos kubernetes cluster kubeconfig --insecure-skip-tls-verify --context-name=dev --cluster-name=dev/kubernetes-dev --apiserver-url=https://$DEV_K8S_EDGELB:6444
+dcos kubernetes cluster kubeconfig --insecure-skip-tls-verify --context-name=dev --cluster-name=dev/kubernetes-dev --apiserver-url=https://$KUBECTL_POOL_PUBLIC_IP:6444
 
 #### TEST KUBECTL WITH /PROD/KUBERNETES-PROD
 
