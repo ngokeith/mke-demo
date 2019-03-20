@@ -39,7 +39,7 @@ PORTWORX_ENABLED="false"
 JUPYTERLAB_ENABLED="true"
 # HDFS Requires minimum 6 Private Agent nodes in your cluster
 HDFS_ENABLED="false"
-CASSANDRA_ENABLED="false"
+CASSANDRA_ENABLED="true"
 REGIONAWARE_DEMO_ENABLED="true"
 
 # OPTIONAL PACKAGE VERSIONS

@@ -67,7 +67,7 @@ echo -e "To enable Mesos Metrics, if on CoreOS run \x1B[1m./start_vpn_coreos.sh 
 echo
 echo -e "To enable Mesos Metrics, if on CentOS run \x1B[1m./start_vpn_centos.sh \x1B[0m before executing \x1B[1m./enable_mesos_metrics_centos.sh\x1B[0m in a seperate tab"
 echo
-echo "If you want to view the Kafka dashboard in Grafana, import dashboard 9018"
+echo "If you want to view the Kafka dashboard in Grafana, import dashboard 9018 and 9947"
 echo
 echo
 echo

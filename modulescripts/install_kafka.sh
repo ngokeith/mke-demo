@@ -3,7 +3,7 @@
 if [[ $1 == "" ]]
 then
         echo
-        echo " Kafka version was not entered. Aborting."
+        echo " Kafka version was not entered. (i.e. 2.3.0-1.1.0) Aborting."
         echo
         exit 1
 fi
