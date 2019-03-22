@@ -1,6 +1,7 @@
 {
 	"service": {
-		"name": "kafka",
+		"name": "useast1-kafka",
+		"region": "us-east-1",
 		"placement_constraint": "[[\"hostname\", \"MAX_PER\", \"2\"]]"
 	},
 	"brokers": {
@@ -11,7 +12,7 @@
 		},
 		"disk": 5000,
 		"count": 3,
-		"port": 1025
+		"port": 1026
 	},
 	"kafka": {
 		"log_retention_minutes": 2

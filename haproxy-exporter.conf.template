@@ -1,0 +1,4 @@
+# Read metrics prometheus haproxy exporter
+[[inputs.prometheus]]
+  ## An array of urls to scrape metrics from.
+  urls = ["http://DCOS_NODE_PRIVATE_IP:9101/metrics"]

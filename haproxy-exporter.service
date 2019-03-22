@@ -1,0 +1,13 @@
+[Unit]
+Description=Edge-LB/HAProxy Exporter service
+Wants=dcos.target
+After=dcos.target
+
+[Service]
+Restart=always
+RestartSec=5
+
+ExecStart=/bin/sh -c '/usr/bin/haproxy_exporter --haproxy.scrape-uri="http://$(/opt/mesosphere/bin/detect_ip):9090/haproxy?stats;csv"'
+
+[Install]
+WantedBy=multi-user.target

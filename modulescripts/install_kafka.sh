@@ -8,7 +8,15 @@ then
         exit 1
 fi
 
+if [[ $2 == "" ]]
+then
+        echo
+        echo " Kafka options path not entered. (i.e. kafka-options.json) Aborting."
+        echo
+        exit 1
+fi
+
 echo
-echo "**** Installing kafka v$1"
+echo "**** Installing kafka v$1 using options json $2"
 echo
-dcos package install kafka --package-version=$1 --options=options-kafka.json --yes
+dcos package install kafka --package-version=$1 --options=$2 --yes

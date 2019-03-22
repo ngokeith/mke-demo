@@ -39,7 +39,7 @@ PORTWORX_ENABLED="false"
 JUPYTERLAB_ENABLED="true"
 # HDFS Requires minimum 6 Private Agent nodes in your cluster
 HDFS_ENABLED="false"
-CASSANDRA_ENABLED="true"
+CASSANDRA_ENABLED="false"
 REGIONAWARE_DEMO_ENABLED="true"
 
 # OPTIONAL PACKAGE VERSIONS
@@ -185,6 +185,8 @@ if [ "$REGIONAWARE_DEMO_ENABLED" = "true" ]; then
 
 ./modulescripts/setup_useast_k8suat.sh
 
+./modulescripts/install_kafka.sh $KAFKA_VERSION options-useast1-kafka.json
+
 fi
 
 #### INSTALL CASSANDRA
@@ -201,7 +203,7 @@ if [ "$CASSANDRA_ENABLED" = "true" ]; then
 fi
 
 #### INSTALL KAFKA
-./modulescripts/install_kafka.sh $KAFKA_VERSION
+./modulescripts/install_kafka.sh $KAFKA_VERSION options-kafka.json
 
 ./modulescripts/install_cli.sh kafka
 
@@ -209,6 +211,8 @@ fi
 
 #### CREATE KAFKA TOPIC
 dcos kafka topic create performancetest --partitions 10 --replication 3 --name=kafka
+
+dcos kafka topic create useast1-topic --partitions 10 --replication 3 --name=useast1-kafka
 
 #### SETUP USER PROD-USER & GROUP PROD & SECRET /PROD/SECRET AND USER DEV-USER & GROUP DEV & SECRET /DEV/SECRET
 ./modulescripts/setup_RBAC.sh
@@ -234,10 +238,27 @@ dcos kafka topic create performancetest --partitions 10 --replication 3 --name=k
 #### DEPLOY SERVICES ON /DEV/KUBERNETES-DEV
 ./modulescripts/install_k8s_devservices.sh
 
+#### INSTALL /DEV/GITLAB-DEV
+./modulescripts/install_gitlab.sh
+
+#### INSTALL /DEV/JENKINS
+./modulescripts/install_jenkins.sh $JENKINS_VERSION
+
+./modulescripts/install_cli.sh jenkins
+
 #### CONNECT HYBRID CLOUD UAT/KUBERNETES_UAT CLUSTER
 if [ "$REGIONAWARE_DEMO_ENABLED" = "true" ]; then
 
 ./modulescripts/connect_k8suat.sh
+
+./modulescripts/install_k8s_uatservices.sh
+
+fi
+
+#### INSTALL JUPYTERLABS
+if [ "$JUPYTERLAB_ENABLED" = "true" ]; then
+
+  ./modulescripts/install_jupyterlabs.sh $JUPYTERLAB_VERSION
 
 fi
 
@@ -261,14 +282,6 @@ rm -f edge-lb-public-key.pem 2> /dev/null
 rm -f private-infra-storage-portworx.pem 2> /dev/null
 rm -f public-infra-storage-portworx.pem 2> /dev/null
 
-#### INSTALL /DEV/JENKINS
-./modulescripts/install_jenkins.sh $JENKINS_VERSION
-
-./modulescripts/install_cli.sh jenkins
-
-#### INSTALL /DEV/GITLAB-DEV
-./modulescripts/install_gitlab.sh
-
 #### INSTALL DCOS-MONITORING
 ./modulescripts/install_monitoring.sh $DCOS_MONITORING_VERSION
 
@@ -278,13 +291,6 @@ sleep 10
 
 ./modulescripts/check-status-with-name.sh beta-dcos-monitoring dcos-monitoring 90-120
 
-
-#### INSTALL JUPYTERLABS
-if [ "$JUPYTERLAB_ENABLED" = "true" ]; then
-
-  ./modulescripts/install_jupyterlabs.sh $JUPYTERLAB_VERSION
-
-fi
 
 #### SETUP HOSTS FILE FOR mke-l7.ddns.net
 echo may need your password to modify /etc/hosts

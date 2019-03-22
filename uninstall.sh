@@ -14,11 +14,16 @@ sleep 15
 kubectl delete -f dklb-deployment-prod.yaml
 kubectl delete -f dklb-prereqs.yaml
 
+kubectx uat
+kubectl delete -f kafka-producer-uat.yaml
+
 dcos edgelb delete kubectl-pool
 dcos edgelb delete services-pool
 
 
-dcos package uninstall kafka --yes
+dcos package uninstall kafka --yes --app-id=kafka
+
+dcos package uninstall kafka --yes --app-id=useast1-kafka
 
 dcos package uninstall beta-dcos-monitoring --yes
 
