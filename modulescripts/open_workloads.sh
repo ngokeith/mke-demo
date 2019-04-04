@@ -59,7 +59,7 @@ open -na "/Applications/Google Chrome.app"/ http://$KUBECTL_POOL_PUBLIC_IP:10001
 sleep 1
 open -na "/Applications/Google Chrome.app"/ http://mke-l7.ddns.net:80
 sleep 1
-open -na "/Applications/Google Chrome.app"/ http://mke-l7.ddns.net:82
+open -na "/Applications/Google Chrome.app"/ http://mke-l7.ddns.net:81
 sleep 1
 echo
 echo
