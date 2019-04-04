@@ -7,7 +7,7 @@ After=dcos.target
 Restart=always
 RestartSec=5
 
-ExecStart=/bin/sh -c '/usr/bin/haproxy_exporter --haproxy.scrape-uri="http://$(/opt/mesosphere/bin/detect_ip):9090/haproxy?stats;csv"'
+ExecStart=/bin/sh -c '/opt/bin/haproxy_exporter --haproxy.scrape-uri="http://$(/opt/mesosphere/bin/detect_ip):9090/haproxy?stats;csv"'
 
 [Install]
 WantedBy=multi-user.target

@@ -1,4 +1,4 @@
-#!/bin/bash
+check_k8s_status.sh#!/bin/bash
 
 # This script is ran via sudo since /etc/hosts is modified. But it also sets up kubectl and the dcos CLI
 # which means some of those files now belong to root
@@ -10,9 +10,11 @@ function finish {
 }
 trap finish EXIT
 
-SCRIPT_VERSION="3-7-2019"
+SCRIPT_VERSION="3-25-2019"
 
 ######## REQUIRED VARIABLES ########
+TERRAFORM_CLUSTER_NAME="lycluster-hub"
+LOCAL_REGION="us-west-2"
 JENKINS_VERSION="3.5.2-2.107.2"
 KAFKA_VERSION="2.3.0-1.1.0"
 K8S_MKE_VERSION="2.2.0-1.13.3"
@@ -36,11 +38,11 @@ VHOST="mke-l7.ddns.net"
 #
 # PORTWORX INSTALLATION FOR 7 PRIVATE AGENT NODES CAN TAKE UP TO 10-15 ADDITIONAL MINUTES
 PORTWORX_ENABLED="false"
-JUPYTERLAB_ENABLED="true"
+JUPYTERLAB_ENABLED="false"
 # HDFS Requires minimum 6 Private Agent nodes in your cluster
 HDFS_ENABLED="false"
 CASSANDRA_ENABLED="false"
-REGIONAWARE_DEMO_ENABLED="true"
+REGIONAWARE_DEMO_ENABLED="false"
 
 # OPTIONAL PACKAGE VERSIONS
 PORTWORX_VERSION="1.3.3-1.6.1.1"
@@ -104,7 +106,7 @@ fi
 #### INSTALL PORTWORX
 if [ "$PORTWORX_ENABLED" = "true" ] && [ "$HDFS_ENABLED" = "false" ]; then
   #### CREATE AND ATTACH AWS EBS VOLUMES
-  ./modulescripts/create_and_attach_volumes.sh
+  ./modulescripts/create_and_attach_volumes.sh $
 
   #### INSTALL PORTWORX
   ./modulescripts/setup_portworx_options.sh
@@ -122,7 +124,7 @@ fi
 if [ "$PORTWORX_ENABLED" = "true" ] && [ "$HDFS_ENABLED" = "true" ]; then
 
   #### CREATE AND ATTACH AWS EBS VOLUMES
-  ./modulescripts/create_and_attach_volumes.sh
+  ./modulescripts/create_and_attach_volumes.sh $TERRAFORM_CLUSTER_NAME $LOCAL_REGION
 
   #### INSTALL PORTWORX
   ./modulescripts/setup_portworx_options.sh
@@ -161,7 +163,6 @@ echo
 echo "**** Deploying Edge-LB config from edgelb-kubectl-two-clusters.json"
 echo
 dcos edgelb create services-pool.json
-
 
 #### ADD LATEST MKE STUB UNIVERSE that supports dklb
 #dcos package repo add --index=0 kubernetes-aws "$KUBERNETES_STUB_LINK"
@@ -207,10 +208,10 @@ fi
 
 ./modulescripts/install_cli.sh kafka
 
-./modulescripts/check-status-with-name.sh kafka kafka 90-120
+./modulescripts/check-status-with-name.sh kafka kafka-performancetest 90-120
 
 #### CREATE KAFKA TOPIC
-dcos kafka topic create performancetest --partitions 10 --replication 3 --name=kafka
+dcos kafka topic create performancetest --partitions 10 --replication 3 --name=kafka-performancetest
 
 dcos kafka topic create useast1-topic --partitions 10 --replication 3 --name=useast1-kafka
 
@@ -218,7 +219,9 @@ dcos kafka topic create useast1-topic --partitions 10 --replication 3 --name=use
 ./modulescripts/setup_RBAC.sh
 
 #### WAIT FOR BOTH K8S CLUSTERS TO COMPLETE THEIR INSTALL
-./modulescripts/test_k8s.sh
+./modulescripts/check_k8s_status.sh prod/kubernetes-prod
+
+./modulescripts/check_k8s_status.sh dev/kubernetes-dev
 
 #### CONNECT TO /PROD/KUBERNETES-PROD USING KUBECTL
 ./modulescripts/connect_k8sprod.sh

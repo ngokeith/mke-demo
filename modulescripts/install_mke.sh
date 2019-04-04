@@ -3,7 +3,7 @@
 if [[ $1 == "" ]]
 then
         echo
-        echo " Kubernetes package version was not entered. Aborting."
+        echo " Kubernetes package version was not entered. (i.e. i.e. 2.2.2-1.13.5) Aborting."
         echo
         exit 1
 fi

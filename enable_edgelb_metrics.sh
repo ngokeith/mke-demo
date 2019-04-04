@@ -14,7 +14,8 @@ for i in $(dcos node |grep agent| awk '{ print $2 }')
     scp -o StrictHostKeyChecking=no ./haproxy_exporter.tar.gz $1@$i:/tmp/haproxy_exporter.tar.gz;
     scp -o StrictHostKeyChecking=no ./haproxy-exporter.service $1@$i:/tmp/haproxy-exporter.service;
     ssh -o StrictHostKeyChecking=no $1@$i "sudo tar xvf /tmp/haproxy_exporter.tar.gz";
-    ssh -o StrictHostKeyChecking=no $1@$i "sudo cp ./haproxy_exporter-*/haproxy_exporter /usr/bin/";
+    ssh -o StrictHostKeyChecking=no $1@$i "sudo mkdir /opt/bin/";
+    ssh -o StrictHostKeyChecking=no $1@$i "sudo cp ./haproxy_exporter-*/haproxy_exporter /opt/bin/";
     ssh -o StrictHostKeyChecking=no $1@$i "sudo mv /tmp/haproxy-exporter.service /etc/systemd/system/";
     ssh -o StrictHostKeyChecking=no $1@$i "sudo systemctl daemon-reload";
     ssh -o StrictHostKeyChecking=no $1@$i "sudo systemctl enable haproxy-exporter";

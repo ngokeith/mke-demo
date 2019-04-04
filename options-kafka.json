@@ -1,6 +1,6 @@
 {
 	"service": {
-		"name": "kafka",
+		"name": "kafka-performancetest",
 		"placement_constraint": "[[\"hostname\", \"MAX_PER\", \"2\"]]"
 	},
 	"brokers": {
@@ -11,7 +11,7 @@
 		},
 		"disk": 5000,
 		"count": 3,
-		"port": 1025
+		"port": 1027
 	},
 	"kafka": {
 		"log_retention_minutes": 2

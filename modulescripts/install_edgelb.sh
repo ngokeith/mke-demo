@@ -3,7 +3,7 @@
 if [[ $1 == "" ]]
 then
         echo
-        echo " Edgelb version was not entered. Aborting."
+        echo " Edgelb version was not entered. (i.e. 1.3.0) Aborting."
         echo
         exit 1
 fi
