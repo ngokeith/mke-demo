@@ -1,4 +1,4 @@
-check_k8s_status.sh#!/bin/bash
+#!/bin/bash
 
 # This script is ran via sudo since /etc/hosts is modified. But it also sets up kubectl and the dcos CLI
 # which means some of those files now belong to root
@@ -17,9 +17,9 @@ TERRAFORM_CLUSTER_NAME="lycluster-hub"
 LOCAL_REGION="us-west-2"
 JENKINS_VERSION="3.5.2-2.107.2"
 KAFKA_VERSION="2.3.0-1.1.0"
-K8S_MKE_VERSION="2.2.0-1.13.3"
-K8S_PROD_VERSION="2.2.0-1.13.3"
-K8S_DEV_VERSION="2.1.1-1.12.5"
+K8S_MKE_VERSION="2.2.2-1.13.5"
+K8S_PROD_VERSION="2.2.1-1.13.4"
+K8S_DEV_VERSION="2.2.2-1.13.5"
 DCOS_USER="bootstrapuser"
 DCOS_PASSWORD="deleteme"
 EDGE_LB_VERSION="1.3.0"
@@ -38,11 +38,11 @@ VHOST="mke-l7.ddns.net"
 #
 # PORTWORX INSTALLATION FOR 7 PRIVATE AGENT NODES CAN TAKE UP TO 10-15 ADDITIONAL MINUTES
 PORTWORX_ENABLED="false"
-JUPYTERLAB_ENABLED="false"
+JUPYTERLAB_ENABLED="true"
 # HDFS Requires minimum 6 Private Agent nodes in your cluster
-HDFS_ENABLED="false"
+HDFS_ENABLED="true"
 CASSANDRA_ENABLED="false"
-REGIONAWARE_DEMO_ENABLED="false"
+REGIONAWARE_DEMO_ENABLED="true"
 
 # OPTIONAL PACKAGE VERSIONS
 PORTWORX_VERSION="1.3.3-1.6.1.1"
