@@ -5,6 +5,11 @@
 # If you ever break out of this script,this command is run to return permissions from sudo
 # sudo chown -RH $USER ~/.kube ~/.dcos
 
+####### REQUIRED ARGUMENTS #######
+MASTER_URL="$1"
+DCOS_USER="$2"
+DCOS_PASSWORD="$3"
+
 function finish {
   sudo chown -RH $USER ~/.kube ~/.dcos
 }
@@ -13,15 +18,15 @@ trap finish EXIT
 SCRIPT_VERSION="3-25-2019"
 
 ######## REQUIRED VARIABLES ########
-TERRAFORM_CLUSTER_NAME="lycluster-hub"
+# TERRAFORM_CLUSTER_NAME="lycluster-hub"
 LOCAL_REGION="us-west-2"
 JENKINS_VERSION="3.5.2-2.107.2"
 KAFKA_VERSION="2.3.0-1.1.0"
 K8S_MKE_VERSION="2.2.2-1.13.5"
 K8S_PROD_VERSION="2.2.1-1.13.4"
 K8S_DEV_VERSION="2.2.2-1.13.5"
-DCOS_USER="bootstrapuser"
-DCOS_PASSWORD="deleteme"
+# DCOS_USER="bootstrapuser"
+# DCOS_PASSWORD="deleteme"
 EDGE_LB_VERSION="1.3.0"
 DCOS_MONITORING_VERSION="v0.4.3-beta"
 # VHOST Routing Hostname for L7 Loadbalancing
@@ -40,8 +45,8 @@ VHOST="mke-l7.ddns.net"
 PORTWORX_ENABLED="false"
 JUPYTERLAB_ENABLED="true"
 # HDFS Requires minimum 6 Private Agent nodes in your cluster
-HDFS_ENABLED="true"
-CASSANDRA_ENABLED="false"
+HDFS_ENABLED="false" # HDFS_ENABLED="true"
+CASSANDRA_ENABLED="true" # CASSANDRA_ENABLED="false"
 REGIONAWARE_DEMO_ENABLED="true"
 
 # OPTIONAL PACKAGE VERSIONS
@@ -53,7 +58,7 @@ JUPYTERLAB_VERSION="1.2.0-0.33.7"
 
 LICENSE_FILE="<ALTERNATE/PATH/TO/LICENSE/FILE>"
 SSH_KEY_FILE="<PATH/TO/SSH/KEY/FILE>"
-USER="alexly"
+USER="root" # USER="alexly"
 
 #### SETUP MASTER URL VARIABLE
 
@@ -67,7 +72,7 @@ then
 fi
 
 # For the master change http to https so kubectl setup doesn't break
-MASTER_URL=$(echo $1 | sed 's/http/https/')
+MASTER_URL=$(echo "$MASTER_URL" | sed 's/http/https/')
 
 #### MOVE DCOS CLI CLUSTERS TO /TMP/CLUSTERS
 ./modulescripts/tmp_clusters.sh
@@ -300,7 +305,7 @@ echo may need your password to modify /etc/hosts
 sudo ./modulescripts/append-etchosts.sh
 
 #### OPEN WORKLOADS
-./modulescripts/open_workloads.sh
+# ./modulescripts/open_workloads.sh
 
 #### OPEN PX-LIGHTHOUSE
 if [ "$PORTWORX_ENABLED" = "true" ]; then

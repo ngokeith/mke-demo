@@ -2,7 +2,7 @@
 	"apiVersion": "V2",
 	"name": "kubectl-pool",
 	"constraints": "hostname:UNIQUE",
-	"count": 1,
+	"count": 2,
 	"cpus": 0.2,
 	"cpusAdminOverhead": 0.1,
 	"disk": 256,

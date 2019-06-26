@@ -1,20 +1,19 @@
 #!/bin/bash
-kubectx prod
-
+kubectl config use-context prod # kubectx prod
 kubectl delete -f multi-service-l7.yaml
 sleep 15
 kubectl delete -f kafka-producer.yaml
 kubectl delete -f dklb-deployment-dev.yaml
 kubectl delete -f dklb-prereqs.yaml
 
-kubectx dev
+kubectl config use-context dev # kubectx dev
 
 kubectl delete -f multi-service-l4-dev.yaml
 sleep 15
 kubectl delete -f dklb-deployment-prod.yaml
 kubectl delete -f dklb-prereqs.yaml
 
-kubectx uat
+kubectl config use-context uat # kubectx uat
 kubectl delete -f kafka-producer-uat.yaml
 
 dcos edgelb delete kubectl-pool

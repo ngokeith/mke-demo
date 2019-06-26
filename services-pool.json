@@ -1,7 +1,7 @@
 {
 	"apiVersion": "V2",
 	"name": "services-pool",
-	"count": 1,
+	"count": 2,
 	"constraints": "hostname:UNIQUE",
 	"cpus": 0.2,
 	"cpusAdminOverhead": 0.1,

@@ -1,10 +1,13 @@
 #!/bin/bash
 
+MASTER_IP=$(dcos node | grep "master" | tail -1 | awk '{print $2}')
+
 #### GET PUBLIC IP OF PROD-LB-POOL
 echo
 echo "**** Setting env var KUBECTL_POOL_PUBLIC_IP"
 echo
-export KUBECTL_POOL_PUBLIC_IP=$(dcos task exec -it kubectl-pool__edgelb-pool- curl ifconfig.co | tr -d '\r' | tr -d '\n')
+# export KUBECTL_POOL_PUBLIC_IP=$(dcos task exec -it kubectl-pool__edgelb-pool- curl ifconfig.co | tr -d '\r' | tr -d '\n')
+export KUBECTL_POOL_PUBLIC_IP=$(dcos task exec -it kubectl-pool__edgelb-pool-0 ip route get to "$MASTER_IP" | grep -Eo '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' | tail -1)
 echo Public IP of DKLB Edge-LB node is: $KUBECTL_POOL_PUBLIC_IP
 # NOTE, if that approach to finding the public IP doesn't work, consider https://github.com/ably77/dcos-se/tree/master/Kubernetes/mke/public_ip
 
@@ -12,7 +15,8 @@ echo Public IP of DKLB Edge-LB node is: $KUBECTL_POOL_PUBLIC_IP
 echo
 echo "**** Setting env var SERVICES_POOL_PUBLIC_IP"
 echo
-export SERVICES_POOL_PUBLIC_IP=$(dcos task exec -it services-pool__edgelb-pool- curl ifconfig.co | tr -d '\r' | tr -d '\n')
+# export SERVICES_POOL_PUBLIC_IP=$(dcos task exec -it services-pool__edgelb-pool-0 curl ifconfig.co | tr -d '\r' | tr -d '\n')
+export SERVICES_POOL_PUBLIC_IP=$(dcos task exec -it services-pool__edgelb-pool-0 ip route get to "$MASTER_IP" | grep -Eo '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' | tail -1)
 echo Public IP of Edge-LB node is: $SERVICES_POOL_PUBLIC_IP
 # NOTE, if that approach to finding the public IP doesn't work, consider https://github.com/ably77/dcos-se/tree/master/Kubernetes/mke/public_ip
 
